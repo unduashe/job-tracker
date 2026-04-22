@@ -1,22 +1,25 @@
-import { cookies } from "next/headers";
-import { createClient } from "@/lib/supabase/server";
+import type { GroupedApplications } from "@/lib/applications/types";
+import { getApplications } from "@/lib/applications/getApplications";
+import { KanbanBoard } from "@/components/dashboard/KanbanBoard";
 
-/**
- * Muestra un saludo al usuario autenticado.
- */
 export default async function DashboardPage() {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data } = await supabase.auth.getUser();
+    const applications = await getApplications();
 
+    const groupedApplications: GroupedApplications = {
+        applied: [],
+        interview: [],
+        offer: [],
+        rejected: [],
+        archived: [],
+    };
 
-    const email = data.user?.email ?? "usuario";
+    for (const application of applications) {
+        groupedApplications[application.status].push(application);
+    }
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-zinc-100 px-4">
-            <section className="w-full max-w-md rounded-2xl border border-zinc-200 bg-zinc-50 p-8 text-center shadow-md">
-                <h1 className="text-2xl font-semibold text-zinc-900">Hola {email}</h1>
-            </section>
-        </main>
+        <section className="flex h-full min-h-0 w-full">
+            <KanbanBoard groupedApplications={groupedApplications} />
+        </section>
     );
 }

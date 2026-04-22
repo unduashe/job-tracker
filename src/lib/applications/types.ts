@@ -10,3 +10,5 @@ export type ApplicationRow = {
     created_at: string;
     updated_at: string;
 };
+
+export type GroupedApplications = Record<ApplicationStatus, ApplicationRow[]>;
