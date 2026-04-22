@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const validationMessages = {
+    required: (s: string) => `${s} es un campo obligatorio`,
+    max: (s: string, n: number) => `${s} no puede superar los ${n} caracteres`,
+    invalidEnum: (s: string, values: readonly string[]) => `${s} debe ser uno de: ${values.join(", ")}`,
+} as const;
+
 export const APPLICATION_STATUS = [
     "applied",
     "interview",
@@ -17,26 +23,50 @@ export const APPLICATION_STATUS = [
  * @param max Número máximo de caracteres permitidos
  * @returns Esquema zod para string opcional y nullable, con validación de longitud
  */
-const optionalNullableText = (max: number) =>
+const optionalNullableText = (max: number, message: string) =>
     z.preprocess(
       (value) => {
         if (typeof value !== "string") return value;
         const trimmed = value.trim();
         return trimmed === "" ? null : trimmed;
       },
-      z.string().max(max).nullable().optional(),
+      z.string().max(max, {
+          message,
+      }).nullable().optional(),
     );
+
+const baseApplicationFields = {
+    company: z
+        .string()
+        .trim()
+        .min(1, { message: validationMessages.required("Empresa") })
+        .max(100, { message: validationMessages.max("Empresa", 100) }),
+    role: optionalNullableText(100, validationMessages.max("Puesto", 100)),
+    description: optionalNullableText(
+        2000,
+        validationMessages.max("Descripción", 2000),
+    ),
+    status: z.enum(APPLICATION_STATUS, {
+        message: validationMessages.invalidEnum("Estado", APPLICATION_STATUS),
+    }),
+};
 
 /**
  * Schema para la creación de aplicaciones
  */
 export const createApplicationSchema = z.object({
-    company: z.string().trim().min(1).max(100),
-    role: optionalNullableText(100),
-    description: optionalNullableText(2000),
-    status: z.enum(APPLICATION_STATUS).optional(),
+    ...baseApplicationFields,
+    status: baseApplicationFields.status.optional(),
+});
+
+export const updateApplicationSchema = z.object({
+    company: baseApplicationFields.company.optional(),
+    role: baseApplicationFields.role.optional(),
+    description: baseApplicationFields.description.optional(),
+    status: baseApplicationFields.status.optional(),
 });
 
 export type ApplicationStatus = (typeof APPLICATION_STATUS)[number];
 export type CreateApplicationInput = z.input<typeof createApplicationSchema>;
 export type CreateApplicationData = z.output<typeof createApplicationSchema>;
+export type UpdateApplicationInput = z.input<typeof updateApplicationSchema>;
