@@ -18,12 +18,32 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
     archived: "Archivado",
 };
 
-/**
- * Formulario específico para crear candidaturas desde el tablero.
- */
 export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorState, setErrorState] = useState<{ title: string; details: string[] } | null>(null);
+
+    const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        
+        setIsSubmitting(true);
+        setErrorState(null);
+
+        try {
+            const formData = new FormData(event.currentTarget);
+            const result = await createApplicationAction(formData);
+
+            if (result.success) {
+                onSuccess();
+            } else {
+                setErrorState({
+                    title: result.message,
+                    details: result.details,
+                });
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <>
@@ -34,28 +54,7 @@ export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormPro
                 onClose={() => setErrorState(null)}
             />
 
-            <form
-                className="space-y-4"
-                action={async (formData) => {
-                    setIsSubmitting(true);
-                    setErrorState(null);
-
-                    try {
-                        const result = await createApplicationAction(formData);
-
-                        if (result.success) {
-                            onSuccess();
-                        } else {
-                            setErrorState({
-                                title: result.message,
-                                details: result.details,
-                            });
-                        }
-                    } finally {
-                        setIsSubmitting(false);
-                    }
-                }}
-            >
+            <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="space-y-1">
                     <label htmlFor="company" className="text-sm font-medium text-zinc-800">
                         Empresa
