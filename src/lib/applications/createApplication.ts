@@ -1,17 +1,14 @@
 import { cookies } from "next/headers";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { createClient } from "@/lib/supabase/server";
-import {
-    createApplicationSchema,
-    type CreateApplicationInput,
-} from "./schema";
+import { createApplicationSchema } from "./schema";
 import type { ApplicationRow } from "./types";
 
 /**
  * Crea una nueva aplicación validada y asociada al usuario autenticado.
  */
 export async function createApplication(
-    input: CreateApplicationInput,
+    input: unknown,
 ): Promise<ApplicationRow> {
     const parsedInput = createApplicationSchema.parse(input);
     const cookieStore = await cookies();
