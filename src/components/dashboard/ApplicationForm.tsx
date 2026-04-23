@@ -1,26 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { createApplicationAction } from "@/app/dashboard/actions";
+import {
+    createApplicationAction,
+    updateApplicationAction,
+} from "@/app/dashboard/actions";
 import { ErrorToast } from "@/components/ErrorToast";
 import { APPLICATION_STATUS, type ApplicationStatus } from "@/lib/applications/schema";
+import { APPLICATION_STATUS_LABELS } from "@/lib/applications/constants";
+import type { ApplicationRow } from "@/lib/applications/types";
 
 type ApplicationFormProps = {
-    defaultStatus: ApplicationStatus;
+    defaultStatus?: ApplicationStatus;
+    initialData?: ApplicationRow;
+    mode?: "create" | "edit";
+    onCancel?: () => void;
     onSuccess: () => void;
 };
 
-const STATUS_LABELS: Record<ApplicationStatus, string> = {
-    applied: "Aplicado",
-    interview: "Entrevista",
-    offer: "Oferta",
-    rejected: "Rechazado",
-    archived: "Archivado",
-};
-
-export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormProps) {
+export function ApplicationForm({
+    defaultStatus,
+    initialData,
+    mode = "create",
+    onCancel,
+    onSuccess,
+}: ApplicationFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorState, setErrorState] = useState<{ title: string; details: string[] } | null>(null);
+    const isEditMode = mode === "edit";
+    const statusDefaultValue = initialData?.status ?? defaultStatus ?? "applied";
 
     const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -30,7 +38,9 @@ export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormPro
 
         try {
             const formData = new FormData(event.currentTarget);
-            const result = await createApplicationAction(formData);
+            const result = isEditMode
+                ? await updateApplicationAction(formData)
+                : await createApplicationAction(formData);
 
             if (result.success) {
                 onSuccess();
@@ -55,6 +65,10 @@ export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormPro
             />
 
             <form className="space-y-4" onSubmit={handleSubmit}>
+                {isEditMode && initialData ? (
+                    <input type="hidden" name="applicationId" value={initialData.id} />
+                ) : null}
+
                 <div className="space-y-1">
                     <label htmlFor="company" className="text-sm font-medium text-zinc-800">
                         Empresa
@@ -64,6 +78,7 @@ export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormPro
                         name="company"
                         type="text"
                         required
+                        defaultValue={initialData?.company ?? ""}
                         className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
                     />
                 </div>
@@ -76,6 +91,7 @@ export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormPro
                         id="role"
                         name="role"
                         type="text"
+                        defaultValue={initialData?.role ?? ""}
                         className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
                     />
                 </div>
@@ -88,6 +104,7 @@ export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormPro
                         id="description"
                         name="description"
                         rows={4}
+                        defaultValue={initialData?.description ?? ""}
                         className="w-full resize-none rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
                     />
                 </div>
@@ -99,24 +116,44 @@ export function ApplicationForm({ defaultStatus, onSuccess }: ApplicationFormPro
                     <select
                         id="status"
                         name="status"
-                        defaultValue={defaultStatus}
+                        defaultValue={statusDefaultValue}
                         className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
                     >
                         {APPLICATION_STATUS.map((status) => (
                             <option key={status} value={status}>
-                                {STATUS_LABELS[status]}
+                                {APPLICATION_STATUS_LABELS[status]}
                             </option>
                         ))}
                     </select>
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:cursor-pointer hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-500"
-                >
-                    {isSubmitting ? "Creando aplicación..." : "Crear aplicación"}
-                </button>
+                <div className={isEditMode ? "flex w-full items-stretch gap-2" : ""}>
+                    {isEditMode && onCancel ? (
+                        <button
+                            type="button"
+                            onClick={onCancel}
+                            className="flex-1 rounded-md border border-zinc-300 px-4 py-2 text-center text-sm text-zinc-700 transition-colors hover:cursor-pointer hover:bg-zinc-100"
+                        >
+                            Cancelar
+                        </button>
+                    ) : null}
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:cursor-pointer hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-500 ${
+                            isEditMode ? "flex-1 text-center" : "w-full"
+                        }`}
+                    >
+                        {isSubmitting
+                            ? isEditMode
+                                ? "Guardando cambios..."
+                                : "Creando aplicación..."
+                            : isEditMode
+                                ? "Guardar cambios"
+                                : "Crear aplicación"}
+                    </button>
+                </div>
             </form>
         </>
     );

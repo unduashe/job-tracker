@@ -1,6 +1,9 @@
 "use client";
 
-import type { GroupedApplications } from "@/lib/applications/types";
+import { useState } from "react";
+import type { ApplicationRow, GroupedApplications } from "@/lib/applications/types";
+import { KANBAN_COLUMNS } from "@/lib/applications/constants";
+import { ApplicationDetailsModal } from "@/components/dashboard/ApplicationDetailsModal";
 import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
 
 type KanbanBoardProps = {
@@ -11,13 +14,40 @@ type KanbanBoardProps = {
  * Renderiza la estructura base del tablero Kanban.
  */
 export function KanbanBoard({ groupedApplications }: KanbanBoardProps) {
+    const [selectedApplication, setSelectedApplication] = useState<ApplicationRow | null>(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+    const handleOpenDetails = (application: ApplicationRow) => {
+        setSelectedApplication(application);
+        setIsDetailsModalOpen(true);
+    };
+
+    const handleCloseDetails = () => {
+        setIsDetailsModalOpen(false);
+        setSelectedApplication(null);
+    };
+
     return (
-        <section className="flex h-full w-full gap-4 overflow-x-auto pb-2">
-            <KanbanColumn title="Aplicado" status="applied" applications={groupedApplications.applied} />
-            <KanbanColumn title="Entrevista" status="interview" applications={groupedApplications.interview} />
-            <KanbanColumn title="Oferta" status="offer" applications={groupedApplications.offer} />
-            <KanbanColumn title="Rechazado" status="rejected" applications={groupedApplications.rejected} />
-            <KanbanColumn title="Archivado" status="archived" applications={groupedApplications.archived} />
-        </section>
+        <>
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <section className="flex min-h-0 min-w-0 flex-1 items-start gap-4 overflow-x-auto overflow-y-hidden">
+                    {KANBAN_COLUMNS.map((column) => (
+                        <KanbanColumn
+                            key={column.status}
+                            title={column.title}
+                            status={column.status}
+                            applications={groupedApplications[column.status]}
+                            onOpenDetails={handleOpenDetails}
+                        />
+                    ))}
+                </section>
+            </div>
+
+            <ApplicationDetailsModal
+                application={selectedApplication}
+                isOpen={isDetailsModalOpen}
+                onClose={handleCloseDetails}
+            />
+        </>
     );
 }

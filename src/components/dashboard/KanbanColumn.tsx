@@ -10,18 +10,19 @@ type KanbanColumnProps = {
     title: string;
     status: ApplicationStatus;
     applications: ApplicationRow[];
+    onOpenDetails: (application: ApplicationRow) => void;
 };
 
 /**
  * Renderiza una columna del tablero Kanban.
  */
-export function KanbanColumn({ title, status, applications }: KanbanColumnProps) {
+export function KanbanColumn({ title, status, applications, onOpenDetails }: KanbanColumnProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isAppliedEmpty = status === "applied" && applications.length === 0;
 
     return (
         <>
-            <section className="flex h-full min-w-72 basis-72 flex-1 flex-col rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <section className="flex max-h-full min-h-0 min-w-72 basis-72 flex-1 flex-col self-start overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
                 <header className="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
                     <h2 className="text-sm font-semibold text-zinc-800">{title}</h2>
                     <button
@@ -48,7 +49,7 @@ export function KanbanColumn({ title, status, applications }: KanbanColumnProps)
                     </button>
                 </header>
 
-                <div className="flex-1 space-y-3 overflow-y-auto p-3">
+                <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-3">
                     {isAppliedEmpty ? (
                         <p className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600">
                             Empieza creando tu primera candidatura con el botón +
@@ -56,7 +57,11 @@ export function KanbanColumn({ title, status, applications }: KanbanColumnProps)
                     ) : null}
 
                     {applications.map((application) => (
-                        <ApplicationCard key={application.id} company={application.company} role={application.role} />
+                        <ApplicationCard
+                            key={application.id}
+                            application={application}
+                            onOpenDetails={onOpenDetails}
+                        />
                     ))}
                 </div>
             </section>
