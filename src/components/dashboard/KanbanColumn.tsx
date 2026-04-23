@@ -10,15 +10,16 @@ type KanbanColumnProps = {
     title: string;
     status: ApplicationStatus;
     applications: ApplicationRow[];
+    isBoardEmpty: boolean;
     onOpenDetails: (application: ApplicationRow) => void;
 };
 
 /**
  * Renderiza una columna del tablero Kanban.
  */
-export function KanbanColumn({ title, status, applications, onOpenDetails }: KanbanColumnProps) {
+export function KanbanColumn({ title, status, applications, isBoardEmpty, onOpenDetails }: KanbanColumnProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const isAppliedEmpty = status === "applied" && applications.length === 0;
+    const showEmptyState = status === "applied" && isBoardEmpty;
 
     return (
         <>
@@ -50,7 +51,7 @@ export function KanbanColumn({ title, status, applications, onOpenDetails }: Kan
                 </header>
 
                 <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-3">
-                    {isAppliedEmpty ? (
+                    {showEmptyState ? (
                         <p className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600">
                             Empieza creando tu primera candidatura con el botón +
                         </p>

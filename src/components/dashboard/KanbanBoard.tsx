@@ -16,6 +16,7 @@ type KanbanBoardProps = {
 export function KanbanBoard({ groupedApplications }: KanbanBoardProps) {
     const [selectedApplication, setSelectedApplication] = useState<ApplicationRow | null>(null);
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const isBoardEmpty = Object.values(groupedApplications).every((apps) => apps.length === 0);
 
     const handleOpenDetails = (application: ApplicationRow) => {
         setSelectedApplication(application);
@@ -37,6 +38,7 @@ export function KanbanBoard({ groupedApplications }: KanbanBoardProps) {
                             title={column.title}
                             status={column.status}
                             applications={groupedApplications[column.status]}
+                            isBoardEmpty={isBoardEmpty}
                             onOpenDetails={handleOpenDetails}
                         />
                     ))}
