@@ -1,34 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useDroppable } from "@dnd-kit/core";
+import { useCallback } from "react";
 import type { ApplicationStatus } from "@/lib/applications/schema";
 import type { ApplicationRow } from "@/lib/applications/types";
 import { ApplicationCard } from "@/components/dashboard/ApplicationCard";
-import { ApplicationModal } from "@/components/dashboard/ApplicationModal";
 
 type KanbanColumnProps = {
     title: string;
     status: ApplicationStatus;
     applications: ApplicationRow[];
     isBoardEmpty: boolean;
+    onOpenCreateModal: (status: ApplicationStatus) => void;
     onOpenDetails: (application: ApplicationRow) => void;
+    onScrollContainerMount: (status: ApplicationStatus, element: HTMLDivElement | null) => void;
 };
 
 /**
  * Renderiza una columna del tablero Kanban.
  */
-export function KanbanColumn({ title, status, applications, isBoardEmpty, onOpenDetails }: KanbanColumnProps) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+export function KanbanColumn({
+    title,
+    status,
+    applications,
+    isBoardEmpty,
+    onOpenCreateModal,
+    onOpenDetails,
+    onScrollContainerMount,
+}: KanbanColumnProps) {
+    const { setNodeRef, isOver } = useDroppable({ id: status });
     const showEmptyState = status === "applied" && isBoardEmpty;
+    const setScrollContainerRef = useCallback(
+        (element: HTMLDivElement | null) => {
+            onScrollContainerMount(status, element);
+        },
+        [onScrollContainerMount, status],
+    );
 
     return (
         <>
-            <section className="flex max-h-full min-h-0 min-w-72 basis-72 flex-1 flex-col self-start overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <section
+                ref={setNodeRef}
+                className={`flex max-h-full min-h-0 min-w-72 basis-72 flex-1 flex-col self-start overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${
+                    isOver ? "bg-zinc-50" : "bg-white"
+                }`}
+            >
                 <header className="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
                     <h2 className="text-sm font-semibold text-zinc-800">{title}</h2>
                     <button
                         type="button"
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => onOpenCreateModal(status)}
                         aria-label={`Añadir candidatura en ${title}`}
                         className="rounded-md px-1 py-1 text-lg leading-none text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
                     >
@@ -50,7 +71,10 @@ export function KanbanColumn({ title, status, applications, isBoardEmpty, onOpen
                     </button>
                 </header>
 
-                <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-3">
+                <div
+                    ref={setScrollContainerRef}
+                    className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-3"
+                >
                     {showEmptyState ? (
                         <p className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600">
                             Empieza creando tu primera candidatura con el botón +
@@ -66,12 +90,6 @@ export function KanbanColumn({ title, status, applications, isBoardEmpty, onOpen
                     ))}
                 </div>
             </section>
-
-            <ApplicationModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                defaultStatus={status}
-            />
         </>
     );
 }

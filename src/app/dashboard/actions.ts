@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ZodError } from "zod";
+import type { ApplicationStatus } from "@/lib/applications/schema";
 import { createApplication } from "@/lib/applications/createApplication";
 import { deleteApplication } from "@/lib/applications/deleteApplication";
 import { updateApplication } from "@/lib/applications/updateApplication";
@@ -112,6 +113,23 @@ export async function deleteApplicationAction(id: string): Promise<{ success: bo
     } catch (error) {
         console.error("deleteApplicationAction error:", error);
         return { success: false, message: "No se pudo eliminar la aplicación" };
+    }
+}
+
+/**
+ * Actualiza el estado de una candidatura.
+ */
+export async function updateApplicationStatusAction(
+    id: string,
+    newStatus: ApplicationStatus,
+): Promise<{ success: true } | { success: false; message: string }> {
+    try {
+        await updateApplication(id, { status: newStatus });
+        revalidatePath("/dashboard");
+        return { success: true };
+    } catch (error) {
+        console.error("updateApplicationStatusAction error:", error);
+        return { success: false, message: "No se pudo actualizar el estado de la aplicación" };
     }
 }
 
