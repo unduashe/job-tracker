@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import {
-    createNoteAction,
     deleteApplicationAction,
-    deleteNoteAction,
-    updateNoteAction,
 } from "@/app/dashboard/actions";
 import { ErrorToast } from "@/components/ErrorToast";
 import { Button } from "@/components/ui/Button";
@@ -14,8 +11,8 @@ import { NoteEditorCard, NoteViewCard } from "@/components/dashboard/NoteCards";
 import { IconButton } from "@/components/ui/IconButton";
 import { CloseIcon, PlusIcon } from "@/components/ui/icons";
 import { ApplicationForm } from "@/components/dashboard/ApplicationForm";
+import { useApplicationNotes } from "@/hooks/useApplicationNotes";
 import { APPLICATION_STATUS_LABELS } from "@/lib/applications/constants";
-import type { NoteRow } from "@/lib/applications/notes/types";
 import type { ApplicationRow } from "@/lib/applications/types";
 
 type ApplicationDetailsModalProps = {
@@ -26,9 +23,6 @@ type ApplicationDetailsModalProps = {
 
 type Mode = "view" | "edit" | "confirmDelete";
 type DeleteTarget = { type: "application" } | { type: "note"; noteId: string };
-type NoteEditorState =
-    | { type: "create"; subject: string; content: string }
-    | { type: "edit"; noteId: string; subject: string; content: string };
 
 /**
  * Modal dinámico para visualizar y editar una candidatura.
@@ -40,11 +34,18 @@ export function ApplicationDetailsModal({
 }: ApplicationDetailsModalProps) {
     const [mode, setMode] = useState<Mode>("view");
     const [isDeleting, setIsDeleting] = useState(false);
-    const [isSavingNote, setIsSavingNote] = useState(false);
-    const [notesByApplication, setNotesByApplication] = useState<Record<string, NoteRow[]>>({});
-    const [noteEditor, setNoteEditor] = useState<NoteEditorState | null>(null);
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>({ type: "application" });
     const [errorState, setErrorState] = useState<{ title: string; details: string[] } | null>(null);
+
+    const handleError = (title: string, details: string[]) => {
+        setErrorState({ title, details });
+    };
+
+    const { notes, noteEditor, setNoteEditor, isSavingNote, saveNote, deleteNote } = useApplicationNotes(
+        application?.id,
+        application?.notes ?? [],
+        handleError,
+    );
 
     const handleClose = () => {
         if (isDeleting || isSavingNote) {
@@ -53,9 +54,7 @@ export function ApplicationDetailsModal({
 
         setMode("view");
         setIsDeleting(false);
-        setIsSavingNote(false);
         setNoteEditor(null);
-        setNotesByApplication({});
         setDeleteTarget({ type: "application" });
         setErrorState(null);
         onClose();
@@ -83,122 +82,29 @@ export function ApplicationDetailsModal({
         setIsDeleting(false);
     };
 
-    const handleSaveNote = async () => {
-        if (!application || !noteEditor || isSavingNote) {
-            return;
-        }
-
-        setIsSavingNote(true);
-        const formData = new FormData();
-        formData.set("subject", noteEditor.subject);
-        formData.set("content", noteEditor.content);
-
-        if (noteEditor.type === "create") {
-            formData.set("applicationId", application.id);
-            const result = await createNoteAction(formData);
-
-            if (result.success) {
-                setNotesByApplication((prev) => {
-                    const baseNotes =
-                        prev[application.id] ??
-                        [...(application.notes ?? [])].sort(
-                            (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-                        );
-
-                    return {
-                        ...prev,
-                        [application.id]: [result.note, ...baseNotes].sort(
-                            (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-                        ),
-                    };
-                });
-                setNoteEditor(null);
-                setIsSavingNote(false);
-                return;
-            }
-
-            setErrorState({ title: result.message, details: result.details });
-            setIsSavingNote(false);
-            return;
-        }
-
-        formData.set("noteId", noteEditor.noteId);
-        const result = await updateNoteAction(formData);
-
-        if (result.success) {
-            setNotesByApplication((prev) => {
-                const baseNotes =
-                    prev[application.id] ??
-                    [...(application.notes ?? [])].sort(
-                        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-                    );
-
-                return {
-                    ...prev,
-                    [application.id]: baseNotes
-                        .map((note) => (note.id === result.note.id ? result.note : note))
-                        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
-                };
-            });
-            setNoteEditor(null);
-            setIsSavingNote(false);
-            return;
-        }
-
-        setErrorState({ title: result.message, details: result.details });
-        setIsSavingNote(false);
-    };
-
     const handleConfirmDelete = async () => {
         if (deleteTarget.type === "application") {
             await handleDeleteApplication();
             return;
         }
 
-        if (!application || isDeleting) {
+        if (isDeleting) {
             return;
         }
 
         setIsDeleting(true);
-        const result = await deleteNoteAction(deleteTarget.noteId);
+        const wasDeleted = await deleteNote(deleteTarget.noteId);
+        setIsDeleting(false);
 
-        if (result.success) {
-            setNotesByApplication((prev) => {
-                const baseNotes =
-                    prev[application.id] ??
-                    [...(application.notes ?? [])].sort(
-                        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-                    );
-
-                return {
-                    ...prev,
-                    [application.id]: baseNotes.filter((note) => note.id !== deleteTarget.noteId),
-                };
-            });
-            if (noteEditor?.type === "edit" && noteEditor.noteId === deleteTarget.noteId) {
-                setNoteEditor(null);
-            }
+        if (wasDeleted) {
             setDeleteTarget({ type: "application" });
             setMode("view");
-            setIsDeleting(false);
-            return;
         }
-
-        setErrorState({
-            title: "No se pudo eliminar la nota",
-            details: [result.message ?? "Inténtalo de nuevo en unos segundos."],
-        });
-        setIsDeleting(false);
     };
 
     if (!isOpen || !application) {
         return null;
     }
-
-    const notes = notesByApplication[application.id] ??
-        [...(application.notes ?? [])].sort(
-            (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-        );
 
     return (
         <div className="fixed inset-0 z-[55] flex items-center justify-center bg-black/50 p-4" onClick={handleClose}>
@@ -272,7 +178,7 @@ export function ApplicationDetailsModal({
                                         onContentChange={(value) =>
                                             setNoteEditor((prev) => (prev ? { ...prev, content: value } : prev))
                                         }
-                                        onSave={handleSaveNote}
+                                        onSave={saveNote}
                                         onCancel={() => setNoteEditor(null)}
                                     />
                                 ) : null}
@@ -299,7 +205,7 @@ export function ApplicationDetailsModal({
                                                 onContentChange={(value) =>
                                                     setNoteEditor((prev) => (prev ? { ...prev, content: value } : prev))
                                                 }
-                                                onSave={handleSaveNote}
+                                                onSave={saveNote}
                                                 onCancel={() => setNoteEditor(null)}
                                             />
                                         );
