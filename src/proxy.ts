@@ -36,12 +36,19 @@ export async function proxy(request: NextRequest) {
 
     const path = request.nextUrl.pathname;
 
-    const isAuthRoute = path === "/login";
+    const isRootRoute = path === "/";
+    const isAuthRoute = path === "/login" || path === "/register";
     const isProtectedRoute = path.startsWith("/dashboard");
 
     // Si el usuario no está logado e intenta acceder a una ruta protegida se le redirige a login
     if (!user && isProtectedRoute) {
         return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    // Si se accede a la raíz, redirigimos según el estado de sesión
+    if (isRootRoute) {
+        const destination = user ? "/dashboard" : "/login";
+        return NextResponse.redirect(new URL(destination, request.url));
     }
 
     // Si el usuario está logado y accede a login se le redirige al dashboard del usuario logado
