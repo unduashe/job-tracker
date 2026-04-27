@@ -13,7 +13,10 @@ export async function getApplications(): Promise<ApplicationRow[]> {
 
     const { data, error } = await supabase
         .from("applications")
-        .select("*")
+        .select(`
+            *,
+            notes (*)
+        `)
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false });
 
