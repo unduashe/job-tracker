@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
+
 type DeleteConfirmationPanelProps = {
     deleteTargetType: "application" | "note";
     company: string;
@@ -30,22 +32,22 @@ export function DeleteConfirmationPanel({
                 </p>
             </div>
             <footer className="mt-6 flex w-full gap-2">
-                <button
-                    type="button"
+                <Button
+                    variant="secondary"
                     onClick={onCancel}
                     disabled={isDeleting}
-                    className="flex-1 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:cursor-pointer hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex-1 hover:bg-zinc-50"
                 >
                     Cancelar
-                </button>
-                <button
-                    type="button"
+                </Button>
+                <Button
+                    variant="danger"
                     onClick={onConfirm}
                     disabled={isDeleting}
-                    className="flex-1 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:cursor-pointer hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
+                    className="flex-1"
                 >
                     {isDeleting ? "Eliminando..." : "Eliminar"}
-                </button>
+                </Button>
             </footer>
         </>
     );

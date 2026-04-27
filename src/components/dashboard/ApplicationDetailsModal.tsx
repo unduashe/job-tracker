@@ -8,6 +8,7 @@ import {
     updateNoteAction,
 } from "@/app/dashboard/actions";
 import { ErrorToast } from "@/components/ErrorToast";
+import { Button } from "@/components/ui/Button";
 import { DeleteConfirmationPanel } from "@/components/dashboard/DeleteConfirmationPanel";
 import { NoteEditorCard, NoteViewCard } from "@/components/dashboard/NoteCards";
 import { IconButton } from "@/components/ui/IconButton";
@@ -328,23 +329,23 @@ export function ApplicationDetailsModal({
                         </section>
 
                         <footer className="mt-6 flex w-full gap-2">
-                            <button
-                                type="button"
+                            <Button
+                                variant="danger-outline"
                                 onClick={() => {
                                     setDeleteTarget({ type: "application" });
                                     setMode("confirmDelete");
                                 }}
-                                className="flex-1 rounded-md border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:cursor-pointer hover:bg-red-50"
+                                className="flex-1"
                             >
                                 Eliminar
-                            </button>
-                            <button
-                                type="button"
+                            </Button>
+                            <Button
+                                variant="primary"
                                 onClick={() => setMode("edit")}
-                                className="flex-1 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:cursor-pointer hover:bg-zinc-800"
+                                className="flex-1"
                             >
                                 Editar
-                            </button>
+                            </Button>
                         </footer>
                     </>
                 ) : mode === "edit" ? (

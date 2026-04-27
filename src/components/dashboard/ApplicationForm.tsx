@@ -6,6 +6,7 @@ import {
     updateApplicationAction,
 } from "@/app/dashboard/actions";
 import { ErrorToast } from "@/components/ErrorToast";
+import { Button } from "@/components/ui/Button";
 import { APPLICATION_STATUS, type ApplicationStatus } from "@/lib/applications/schema";
 import { APPLICATION_STATUS_LABELS } from "@/lib/applications/constants";
 import type { ApplicationRow } from "@/lib/applications/types";
@@ -129,19 +130,20 @@ export function ApplicationForm({
 
                 <div className={isEditMode ? "flex w-full items-stretch gap-2" : ""}>
                     {isEditMode && onCancel ? (
-                        <button
-                            type="button"
+                        <Button
+                            variant="secondary"
                             onClick={onCancel}
-                            className="flex-1 rounded-md border border-zinc-300 px-4 py-2 text-center text-sm text-zinc-700 transition-colors hover:cursor-pointer hover:bg-zinc-100"
+                            className="flex-1 text-center"
                         >
                             Cancelar
-                        </button>
+                        </Button>
                     ) : null}
 
-                    <button
+                    <Button
                         type="submit"
+                        variant="primary"
                         disabled={isSubmitting}
-                        className={`rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:cursor-pointer hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-500 ${
+                        className={`${
                             isEditMode ? "flex-1 text-center" : "w-full"
                         }`}
                     >
@@ -152,7 +154,7 @@ export function ApplicationForm({
                             : isEditMode
                                 ? "Guardar cambios"
                                 : "Crear aplicación"}
-                    </button>
+                    </Button>
                 </div>
             </form>
         </>
