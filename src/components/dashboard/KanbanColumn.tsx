@@ -5,6 +5,8 @@ import { useCallback } from "react";
 import type { ApplicationStatus } from "@/lib/applications/schema";
 import type { ApplicationRow } from "@/lib/applications/types";
 import { ApplicationCard } from "@/components/dashboard/ApplicationCard";
+import { IconButton } from "@/components/ui/IconButton";
+import { PlusIcon } from "@/components/ui/icons";
 
 type KanbanColumnProps = {
     title: string;
@@ -47,28 +49,12 @@ export function KanbanColumn({
             >
                 <header className="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
                     <h2 className="text-sm font-semibold text-zinc-800">{title}</h2>
-                    <button
-                        type="button"
+                    <IconButton
                         onClick={() => onOpenCreateModal(status)}
-                        aria-label={`Añadir candidatura en ${title}`}
-                        className="rounded-md px-1 py-1 text-lg leading-none text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-plus-icon lucide-plus"
-                        >
-                            <path d="M5 12h14" />
-                            <path d="M12 5v14" />
-                        </svg>
-                    </button>
+                        ariaLabel={`Añadir candidatura en ${title}`}
+                        icon={<PlusIcon />}
+                        className="text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"
+                    />
                 </header>
 
                 <div

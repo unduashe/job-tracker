@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { IconButton } from "@/components/ui/IconButton";
+import { CloseIcon } from "@/components/ui/icons";
 
 type ErrorToastProps = {
     isOpen: boolean;
@@ -76,28 +78,12 @@ export function ErrorToast({
         >
             <div className="mb-2 flex items-start justify-between gap-3">
                 <h4 className="text-sm font-semibold text-red-900">{title}</h4>
-                <button
-                    type="button"
+                <IconButton
                     onClick={closeWithAnimation}
-                    aria-label="Cerrar error"
-                    className="rounded-md px-1 py-1 text-zinc-500 transition-colors hover:cursor-pointer hover:bg-zinc-100 hover:text-zinc-700"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-x-icon lucide-x"
-                    >
-                        <path d="M18 6 6 18" />
-                        <path d="m6 6 12 12" />
-                    </svg>
-                </button>
+                    ariaLabel="Cerrar error"
+                    icon={<CloseIcon />}
+                    className="text-zinc-500 hover:cursor-pointer hover:bg-zinc-100 hover:text-zinc-700"
+                />
             </div>
 
             {details.length > 0 ? (

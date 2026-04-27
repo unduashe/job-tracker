@@ -10,6 +10,8 @@ import {
 import { ErrorToast } from "@/components/ErrorToast";
 import { DeleteConfirmationPanel } from "@/components/dashboard/DeleteConfirmationPanel";
 import { NoteEditorCard, NoteViewCard } from "@/components/dashboard/NoteCards";
+import { IconButton } from "@/components/ui/IconButton";
+import { CloseIcon, PlusIcon } from "@/components/ui/icons";
 import { ApplicationForm } from "@/components/dashboard/ApplicationForm";
 import { APPLICATION_STATUS_LABELS } from "@/lib/applications/constants";
 import type { NoteRow } from "@/lib/applications/notes/types";
@@ -188,24 +190,6 @@ export function ApplicationDetailsModal({
         setIsDeleting(false);
     };
 
-    const closeEditorIcon = (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-x-icon lucide-x"
-        >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-        </svg>
-    );
-
     if (!isOpen || !application) {
         return null;
     }
@@ -229,15 +213,13 @@ export function ApplicationDetailsModal({
                                 ? "Editar candidatura"
                                 : "Eliminar"}
                     </h3>
-                    <button
-                        type="button"
+                    <IconButton
                         onClick={handleClose}
+                        ariaLabel="Cerrar modal de detalles"
+                        icon={<CloseIcon />}
                         disabled={isDeleting || isSavingNote}
-                        aria-label="Cerrar modal de detalles"
-                        className="rounded-md px-1 py-1 text-zinc-500 transition-colors hover:cursor-pointer hover:bg-zinc-100 hover:text-zinc-700"
-                    >
-                        {closeEditorIcon}
-                    </button>
+                        className="text-zinc-500 hover:cursor-pointer hover:bg-zinc-100 hover:text-zinc-700"
+                    />
                 </header>
 
                 {mode === "view" ? (
@@ -268,14 +250,13 @@ export function ApplicationDetailsModal({
                         <section className="mt-5">
                             <div className="mb-2 flex items-center justify-between">
                                 <p className="text-sm uppercase tracking-wide text-zinc-500">Notas</p>
-                                <button
-                                    type="button"
+                                <IconButton
                                     onClick={() => setNoteEditor({ type: "create", subject: "", content: "" })}
+                                    ariaLabel="Añadir nota"
+                                    icon={<PlusIcon />}
                                     disabled={noteEditor !== null}
-                                    className="rounded-md border border-zinc-300 px-2 py-1 text-sm font-medium text-zinc-700 transition-colors hover:cursor-pointer hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    +
-                                </button>
+                                    className="text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"
+                                />
                             </div>
 
                             <div className="max-h-[290px] space-y-2 overflow-y-auto pr-1">
@@ -292,7 +273,6 @@ export function ApplicationDetailsModal({
                                         }
                                         onSave={handleSaveNote}
                                         onCancel={() => setNoteEditor(null)}
-                                        closeIcon={closeEditorIcon}
                                     />
                                 ) : null}
 
@@ -320,7 +300,6 @@ export function ApplicationDetailsModal({
                                                 }
                                                 onSave={handleSaveNote}
                                                 onCancel={() => setNoteEditor(null)}
-                                                closeIcon={closeEditorIcon}
                                             />
                                         );
                                     }
