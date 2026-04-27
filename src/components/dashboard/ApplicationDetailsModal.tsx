@@ -1,9 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { deleteApplicationAction } from "@/app/dashboard/actions";
+import {
+    createNoteAction,
+    deleteApplicationAction,
+    deleteNoteAction,
+    updateNoteAction,
+} from "@/app/dashboard/actions";
+import { ErrorToast } from "@/components/ErrorToast";
+import { DeleteConfirmationPanel } from "@/components/dashboard/DeleteConfirmationPanel";
+import { NoteEditorCard, NoteViewCard } from "@/components/dashboard/NoteCards";
 import { ApplicationForm } from "@/components/dashboard/ApplicationForm";
 import { APPLICATION_STATUS_LABELS } from "@/lib/applications/constants";
+import type { NoteRow } from "@/lib/applications/notes/types";
 import type { ApplicationRow } from "@/lib/applications/types";
 
 type ApplicationDetailsModalProps = {
@@ -13,6 +22,10 @@ type ApplicationDetailsModalProps = {
 };
 
 type Mode = "view" | "edit" | "confirmDelete";
+type DeleteTarget = { type: "application" } | { type: "note"; noteId: string };
+type NoteEditorState =
+    | { type: "create"; subject: string; content: string }
+    | { type: "edit"; noteId: string; subject: string; content: string };
 
 /**
  * Modal dinámico para visualizar y editar una candidatura.
@@ -24,17 +37,28 @@ export function ApplicationDetailsModal({
 }: ApplicationDetailsModalProps) {
     const [mode, setMode] = useState<Mode>("view");
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isSavingNote, setIsSavingNote] = useState(false);
+    const [notesByApplication, setNotesByApplication] = useState<Record<string, NoteRow[]>>({});
+    const [noteEditor, setNoteEditor] = useState<NoteEditorState | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>({ type: "application" });
+    const [errorState, setErrorState] = useState<{ title: string; details: string[] } | null>(null);
 
     const handleClose = () => {
-        if (isDeleting) {
+        if (isDeleting || isSavingNote) {
             return;
         }
+
         setMode("view");
         setIsDeleting(false);
+        setIsSavingNote(false);
+        setNoteEditor(null);
+        setNotesByApplication({});
+        setDeleteTarget({ type: "application" });
+        setErrorState(null);
         onClose();
     };
 
-    const handleDelete = async () => {
+    const handleDeleteApplication = async () => {
         if (!application || isDeleting) {
             return;
         }
@@ -49,13 +73,147 @@ export function ApplicationDetailsModal({
             return;
         }
 
-        alert(result.message ?? "No se pudo eliminar la aplicación");
+        setErrorState({
+            title: "No se pudo eliminar la aplicación",
+            details: [result.message ?? "Inténtalo de nuevo en unos segundos."],
+        });
         setIsDeleting(false);
     };
+
+    const handleSaveNote = async () => {
+        if (!application || !noteEditor || isSavingNote) {
+            return;
+        }
+
+        setIsSavingNote(true);
+        const formData = new FormData();
+        formData.set("subject", noteEditor.subject);
+        formData.set("content", noteEditor.content);
+
+        if (noteEditor.type === "create") {
+            formData.set("applicationId", application.id);
+            const result = await createNoteAction(formData);
+
+            if (result.success) {
+                setNotesByApplication((prev) => {
+                    const baseNotes =
+                        prev[application.id] ??
+                        [...(application.notes ?? [])].sort(
+                            (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+                        );
+
+                    return {
+                        ...prev,
+                        [application.id]: [result.note, ...baseNotes].sort(
+                            (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+                        ),
+                    };
+                });
+                setNoteEditor(null);
+                setIsSavingNote(false);
+                return;
+            }
+
+            setErrorState({ title: result.message, details: result.details });
+            setIsSavingNote(false);
+            return;
+        }
+
+        formData.set("noteId", noteEditor.noteId);
+        const result = await updateNoteAction(formData);
+
+        if (result.success) {
+            setNotesByApplication((prev) => {
+                const baseNotes =
+                    prev[application.id] ??
+                    [...(application.notes ?? [])].sort(
+                        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+                    );
+
+                return {
+                    ...prev,
+                    [application.id]: baseNotes
+                        .map((note) => (note.id === result.note.id ? result.note : note))
+                        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
+                };
+            });
+            setNoteEditor(null);
+            setIsSavingNote(false);
+            return;
+        }
+
+        setErrorState({ title: result.message, details: result.details });
+        setIsSavingNote(false);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deleteTarget.type === "application") {
+            await handleDeleteApplication();
+            return;
+        }
+
+        if (!application || isDeleting) {
+            return;
+        }
+
+        setIsDeleting(true);
+        const result = await deleteNoteAction(deleteTarget.noteId);
+
+        if (result.success) {
+            setNotesByApplication((prev) => {
+                const baseNotes =
+                    prev[application.id] ??
+                    [...(application.notes ?? [])].sort(
+                        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+                    );
+
+                return {
+                    ...prev,
+                    [application.id]: baseNotes.filter((note) => note.id !== deleteTarget.noteId),
+                };
+            });
+            if (noteEditor?.type === "edit" && noteEditor.noteId === deleteTarget.noteId) {
+                setNoteEditor(null);
+            }
+            setDeleteTarget({ type: "application" });
+            setMode("view");
+            setIsDeleting(false);
+            return;
+        }
+
+        setErrorState({
+            title: "No se pudo eliminar la nota",
+            details: [result.message ?? "Inténtalo de nuevo en unos segundos."],
+        });
+        setIsDeleting(false);
+    };
+
+    const closeEditorIcon = (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-x-icon lucide-x"
+        >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+        </svg>
+    );
 
     if (!isOpen || !application) {
         return null;
     }
+
+    const notes = notesByApplication[application.id] ??
+        [...(application.notes ?? [])].sort(
+            (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+        );
 
     return (
         <div className="fixed inset-0 z-[55] flex items-center justify-center bg-black/50 p-4" onClick={handleClose}>
@@ -68,31 +226,17 @@ export function ApplicationDetailsModal({
                         {mode === "view"
                             ? "Detalle de candidatura"
                             : mode === "edit"
-                              ? "Editar candidatura"
-                              : "Eliminar candidatura"}
+                                ? "Editar candidatura"
+                                : "Eliminar"}
                     </h3>
                     <button
                         type="button"
                         onClick={handleClose}
-                        disabled={isDeleting}
+                        disabled={isDeleting || isSavingNote}
                         aria-label="Cerrar modal de detalles"
                         className="rounded-md px-1 py-1 text-zinc-500 transition-colors hover:cursor-pointer hover:bg-zinc-100 hover:text-zinc-700"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-x-icon lucide-x"
-                        >
-                            <path d="M18 6 6 18" />
-                            <path d="m6 6 12 12" />
-                        </svg>
+                        {closeEditorIcon}
                     </button>
                 </header>
 
@@ -100,31 +244,117 @@ export function ApplicationDetailsModal({
                     <>
                         <div className="space-y-3">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-zinc-500">Empresa</p>
+                                <p className="text-sm uppercase tracking-wide text-zinc-500">Empresa</p>
                                 <p className="text-sm font-semibold text-zinc-900">{application.company}</p>
                             </div>
                             {application.role ? (
                                 <div>
-                                    <p className="text-xs uppercase tracking-wide text-zinc-500">Puesto</p>
+                                    <p className="text-sm uppercase tracking-wide text-zinc-500">Puesto</p>
                                     <p className="text-sm italic text-zinc-700">{application.role}</p>
                                 </div>
                             ) : null}
                             {application.description ? (
                                 <div>
-                                    <p className="text-xs uppercase tracking-wide text-zinc-500">Descripción</p>
+                                    <p className="text-sm uppercase tracking-wide text-zinc-500">Descripción</p>
                                     <p className="text-sm text-zinc-700">{application.description}</p>
                                 </div>
                             ) : null}
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-zinc-500">Estado</p>
+                                <p className="text-sm uppercase tracking-wide text-zinc-500">Estado</p>
                                 <p className="text-sm text-zinc-800">{APPLICATION_STATUS_LABELS[application.status]}</p>
                             </div>
                         </div>
 
+                        <section className="mt-5">
+                            <div className="mb-2 flex items-center justify-between">
+                                <p className="text-sm uppercase tracking-wide text-zinc-500">Notas</p>
+                                <button
+                                    type="button"
+                                    onClick={() => setNoteEditor({ type: "create", subject: "", content: "" })}
+                                    disabled={noteEditor !== null}
+                                    className="rounded-md border border-zinc-300 px-2 py-1 text-sm font-medium text-zinc-700 transition-colors hover:cursor-pointer hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    +
+                                </button>
+                            </div>
+
+                            <div className="max-h-[290px] space-y-2 overflow-y-auto pr-1">
+                                {noteEditor?.type === "create" ? (
+                                    <NoteEditorCard
+                                        subject={noteEditor.subject}
+                                        content={noteEditor.content}
+                                        isSaving={isSavingNote}
+                                        onSubjectChange={(value) =>
+                                            setNoteEditor((prev) => (prev ? { ...prev, subject: value } : prev))
+                                        }
+                                        onContentChange={(value) =>
+                                            setNoteEditor((prev) => (prev ? { ...prev, content: value } : prev))
+                                        }
+                                        onSave={handleSaveNote}
+                                        onCancel={() => setNoteEditor(null)}
+                                        closeIcon={closeEditorIcon}
+                                    />
+                                ) : null}
+
+                                {notes.length === 0 && noteEditor?.type !== "create" ? (
+                                    <p className="rounded-md border border-dashed border-zinc-300 px-3 py-4 text-sm text-zinc-500">
+                                        Todavía no hay notas para esta candidatura.
+                                    </p>
+                                ) : null}
+
+                                {notes.map((note) => {
+                                    const isEditing = noteEditor?.type === "edit" && noteEditor.noteId === note.id;
+
+                                    if (isEditing) {
+                                        return (
+                                            <NoteEditorCard
+                                                key={note.id}
+                                                subject={noteEditor.subject}
+                                                content={noteEditor.content}
+                                                isSaving={isSavingNote}
+                                                onSubjectChange={(value) =>
+                                                    setNoteEditor((prev) => (prev ? { ...prev, subject: value } : prev))
+                                                }
+                                                onContentChange={(value) =>
+                                                    setNoteEditor((prev) => (prev ? { ...prev, content: value } : prev))
+                                                }
+                                                onSave={handleSaveNote}
+                                                onCancel={() => setNoteEditor(null)}
+                                                closeIcon={closeEditorIcon}
+                                            />
+                                        );
+                                    }
+
+                                    return (
+                                        <NoteViewCard
+                                            key={note.id}
+                                            note={note}
+                                            isDisabled={noteEditor !== null}
+                                            onEdit={() =>
+                                                setNoteEditor({
+                                                    type: "edit",
+                                                    noteId: note.id,
+                                                    subject: note.subject ?? "",
+                                                    content: note.content ?? "",
+                                                })
+                                            }
+                                            onDelete={() => {
+                                                setDeleteTarget({ type: "note", noteId: note.id });
+                                                setMode("confirmDelete");
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </section>
+
                         <footer className="mt-6 flex w-full gap-2">
                             <button
                                 type="button"
-                                onClick={() => setMode("confirmDelete")}
+                                onClick={() => {
+                                    setDeleteTarget({ type: "application" });
+                                    setMode("confirmDelete");
+                                }}
                                 className="flex-1 rounded-md border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:cursor-pointer hover:bg-red-50"
                             >
                                 Eliminar
@@ -139,43 +369,29 @@ export function ApplicationDetailsModal({
                         </footer>
                     </>
                 ) : mode === "edit" ? (
-                    <>
-                        <ApplicationForm
-                            mode="edit"
-                            initialData={application}
-                            onCancel={() => setMode("view")}
-                            onSuccess={handleClose}
-                        />
-                    </>
+                    <ApplicationForm
+                        mode="edit"
+                        initialData={application}
+                        onCancel={() => setMode("view")}
+                        onSuccess={handleClose}
+                    />
                 ) : (
-                    <>
-                        <div className="space-y-3">
-                            <p className="text-sm text-zinc-700">
-                                ¿Estás seguro de que quieres eliminar la candidatura a {application.company}
-                                {application.role ? ` para el puesto ${application.role}` : ""}?
-                            </p>
-                        </div>
-                        <footer className="mt-6 flex w-full gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setMode("view")}
-                                disabled={isDeleting}
-                                className="flex-1 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:cursor-pointer hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleDelete}
-                                disabled={isDeleting}
-                                className="flex-1 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:cursor-pointer hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400"
-                            >
-                                {isDeleting ? "Eliminando..." : "Eliminar"}
-                            </button>
-                        </footer>
-                    </>
+                    <DeleteConfirmationPanel
+                        deleteTargetType={deleteTarget.type}
+                        company={application.company}
+                        role={application.role}
+                        isDeleting={isDeleting}
+                        onCancel={() => setMode("view")}
+                        onConfirm={handleConfirmDelete}
+                    />
                 )}
             </div>
+            <ErrorToast
+                isOpen={errorState !== null}
+                title={errorState?.title ?? ""}
+                details={errorState?.details ?? []}
+                onClose={() => setErrorState(null)}
+            />
         </div>
     );
 }
