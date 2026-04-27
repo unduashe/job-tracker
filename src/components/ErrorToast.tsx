@@ -74,6 +74,7 @@ export function ErrorToast({
             role={isVisible ? "alert" : undefined}
             aria-hidden={!isVisible}
             data-state={isVisible ? "open" : "closed"}
+            onClick={(event) => event.stopPropagation()}
             className="fixed right-4 top-4 z-[100] w-full max-w-md transform rounded-xl border border-red-200 bg-red-100 p-4 shadow-lg duration-300 ease-out data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:transition-none data-[state=open]:pointer-events-auto data-[state=closed]:translate-x-[120%] data-[state=closed]:opacity-0 data-[state=closed]:transition data-[state=closed]:pointer-events-none sm:right-6 lg:right-8"
         >
             <div className="mb-2 flex items-start justify-between gap-3">
