@@ -40,16 +40,32 @@ export async function updateApplication(
     const supabase = createClient(cookieStore);
     const user = await getCurrentUser(supabase);
 
+    const { data: ownedApplication, error: ownedApplicationError } = await supabase
+        .from("applications")
+        .select("id, user_id")
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (ownedApplicationError) {
+        console.error("Fallo al validar permisos de la aplicación:", ownedApplicationError);
+        throw new Error("No se ha podido actualizar la aplicación");
+    }
+
+    if (!ownedApplication) {
+        throw new Error("No se ha encontrado la aplicación o no tienes permisos");
+    }
+
     const { data, error } = await supabase
         .from("applications")
         .update(payload)
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", ownedApplication.user_id)
         .select("*")
         .single();
 
     if (error) {
-        console.error("Fallo al actualizar la aplicación:", error);
+        console.error("Fallo al ejecutar actualización de la aplicación:", error);
         throw new Error("No se ha podido actualizar la aplicación");
     }
 
