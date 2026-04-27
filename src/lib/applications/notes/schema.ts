@@ -1,9 +1,5 @@
 import { z } from "zod";
-
-const validationMessages = {
-    required: (s: string) => `${s} es un campo obligatorio`,
-    max: (s: string, n: number) => `${s} no puede superar los ${n} caracteres`,
-} as const;
+import { validationMessages } from "@/lib/utils/validationMessages";
 
 const baseNoteFields = {
     subject: z

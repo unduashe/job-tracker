@@ -1,10 +1,5 @@
 import { z } from "zod";
-
-const validationMessages = {
-    required: (s: string) => `${s} es un campo obligatorio`,
-    max: (s: string, n: number) => `${s} no puede superar los ${n} caracteres`,
-    invalidEnum: (s: string, values: readonly string[]) => `${s} debe ser uno de: ${values.join(", ")}`,
-} as const;
+import { validationMessages } from "@/lib/utils/validationMessages";
 
 export const APPLICATION_STATUS = [
     "applied",
