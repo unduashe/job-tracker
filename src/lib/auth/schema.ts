@@ -14,3 +14,23 @@ export const authSchema = z.object({
 });
 
 export type AuthCredentials = z.infer<typeof authSchema>;
+
+/**
+ * Email para solicitar el enlace de recuperación de contraseña.
+ */
+export const forgotPasswordEmailSchema = z.object({
+    email: z.string().trim().email({ message: validationMessages.authEmailInvalid }),
+});
+
+/**
+ * Nueva contraseña y confirmación (misma política que registro).
+ */
+export const resetPasswordFormSchema = z
+    .object({
+        password: authSchema.shape.password,
+        confirmPassword: authSchema.shape.password,
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: validationMessages.authPasswordMismatch,
+        path: ["confirmPassword"],
+    });

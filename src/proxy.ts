@@ -37,11 +37,18 @@ export async function proxy(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     const isRootRoute = path === "/";
-    const isAuthRoute = path === "/login" || path === "/register";
+    const isResetPasswordRoute = path === "/reset-password";
+    const isAuthRoute =
+        path === "/login" || path === "/register" || path === "/forgot-password";
     const isProtectedRoute = path.startsWith("/dashboard");
 
     // Si el usuario no está logado e intenta acceder a una ruta protegida se le redirige a login
     if (!user && isProtectedRoute) {
+        return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    // Restablecer contraseña exige sesión (la crea el callback tras el enlace del correo)
+    if (!user && isResetPasswordRoute) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 

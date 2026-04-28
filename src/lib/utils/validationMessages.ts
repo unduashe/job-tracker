@@ -17,4 +17,8 @@ export const validationMessages = {
     authVerifyEmailSuccess:
         "Cuenta creada. Revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
     authLoginSuccess: "Inicio de sesión exitoso",
+    authResetEmailSent: "Revisa tu bandeja de entrada",
+    authPasswordMismatch: "Las contraseñas no coinciden",
+    authPasswordUpdated: "Contraseña actualizada",
+    authSessionRequired: "Tu sesión ha expirado. Solicita un nuevo enlace de recuperación.",
 } as const;

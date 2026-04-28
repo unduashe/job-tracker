@@ -7,19 +7,7 @@ import { ErrorToast } from "@/components/ErrorToast";
 import { Button } from "@/components/ui/Button";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { registerWithPassword } from "@/app/(auth)/actions";
-
-/**
- * El `redirect()` de la Server Action lanza un error especial en el cliente.
- */
-function isNextRedirectError(error: unknown): boolean {
-    return (
-        typeof error === "object" &&
-        error !== null &&
-        "digest" in error &&
-        typeof (error as { digest: unknown }).digest === "string" &&
-        (error as { digest: string }).digest.startsWith("NEXT_REDIRECT")
-    );
-}
+import { isNextRedirectError } from "@/lib/auth/isNextRedirectError";
 
 type FeedbackState = {
     success: boolean;

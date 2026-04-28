@@ -3,7 +3,12 @@
 import type { AuthError } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { authSchema } from "@/lib/auth/schema";
+import { getRequestOrigin } from "@/lib/auth/requestOrigin";
+import {
+    authSchema,
+    forgotPasswordEmailSchema,
+    resetPasswordFormSchema,
+} from "@/lib/auth/schema";
 import { createClient } from "@/lib/supabase/server";
 import { validationMessages } from "@/lib/utils/validationMessages";
 
@@ -12,6 +17,12 @@ export type AuthActionResponse = {
     message: string;
     /** Mensajes de Zod o error genérico para el ErrorToast */
     details?: string[];
+};
+
+/** Respuesta de acciones de recuperación de contraseña (sin `details`). */
+export type PasswordRecoveryActionResponse = {
+    success: boolean;
+    message: string;
 };
 
 type ParsedAuthInput =
@@ -132,6 +143,105 @@ export async function registerWithPassword(email: string, password: string): Pro
         success: false,
         message: validationMessages.authGenericError,
     };
+}
+
+/**
+ * Envía el correo de recuperación con enlace que apunta a `/auth/callback`.
+ */
+export async function sendResetPasswordEmailAction(
+    email: string,
+): Promise<PasswordRecoveryActionResponse> {
+    const parsed = forgotPasswordEmailSchema.safeParse({ email: email.trim() });
+
+    if (!parsed.success) {
+        return {
+            success: false,
+            message: parsed.error.issues[0]?.message ?? validationMessages.authGenericError,
+        };
+    }
+
+    try {
+        const origin = await getRequestOrigin();
+        const cookieStore = await cookies();
+        const supabase = createClient(cookieStore);
+        const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+            redirectTo: `${origin}/auth/callback`,
+        });
+
+        if (error) {
+            console.error("resetPasswordForEmail:", error);
+
+            return { success: false, message: validationMessages.authGenericError };
+        }
+
+        return {
+            success: true,
+            message: validationMessages.authResetEmailSent,
+        };
+    } catch (error) {
+        console.error("sendResetPasswordEmailAction:", error);
+
+        return { success: false, message: validationMessages.authGenericError };
+    }
+}
+
+/**
+ * Actualiza la contraseña del usuario autenticado (flujo de recuperación).
+ * Ignora cualquier email enviado desde el cliente; solo usa la sesión actual.
+ */
+export async function updatePasswordAction(
+    password: string,
+    confirmPassword: string,
+): Promise<PasswordRecoveryActionResponse> {
+    const parsed = resetPasswordFormSchema.safeParse({ password, confirmPassword });
+
+    if (!parsed.success) {
+        return {
+            success: false,
+            message: parsed.error.issues[0]?.message ?? validationMessages.authGenericError,
+        };
+    }
+
+    try {
+        const cookieStore = await cookies();
+        const supabase = createClient(cookieStore);
+
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+            return { success: false, message: validationMessages.authSessionRequired };
+        }
+
+        const { error } = await supabase.auth.updateUser({
+            password: parsed.data.password,
+        });
+
+        if (error) {
+            console.error("updateUser password:", error);
+
+            if (error.code === "weak_password") {
+                const trimmed = error.message.trim();
+
+                return {
+                    success: false,
+                    message:
+                        trimmed.length > 0 ? trimmed : validationMessages.authWeakPasswordFallback,
+                };
+            }
+
+            return { success: false, message: validationMessages.authGenericError };
+        }
+    } catch (error) {
+        console.error("updatePasswordAction:", error);
+
+        return { success: false, message: validationMessages.authGenericError };
+    }
+
+    redirect(
+        `/login?message=${encodeURIComponent(validationMessages.authPasswordUpdated)}`,
+    );
 }
 
 function mapLoginSupabaseError(error: AuthError): AuthActionResponse {

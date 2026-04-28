@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { ErrorToast } from "@/components/ErrorToast";
 import { Button } from "@/components/ui/Button";
@@ -18,8 +18,12 @@ type ErrorState = {
  */
 export function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
     const [errorState, setErrorState] = useState<ErrorState | null>(null);
+
+    const bannerMessage = searchParams.get("message");
+    const bannerError = searchParams.get("error");
 
     const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -58,6 +62,17 @@ export function LoginForm() {
     return (
         <>
             <form onSubmit={handleSubmit} className="space-y-5">
+                {bannerMessage ? (
+                    <p aria-live="polite" className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-800">
+                        {bannerMessage}
+                    </p>
+                ) : null}
+                {bannerError ? (
+                    <p aria-live="assertive" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
+                        {bannerError}
+                    </p>
+                ) : null}
+
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-zinc-700" htmlFor="email">
                         Correo electrónico
@@ -87,6 +102,14 @@ export function LoginForm() {
                         minLength={8}
                         placeholder="Mínimo 8 caracteres, letra y número"
                     />
+                    <p className="text-right text-sm">
+                        <Link
+                            href="/forgot-password"
+                            className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900"
+                        >
+                            Olvidé mi contraseña
+                        </Link>
+                    </p>
                 </div>
 
                 <Button type="submit" variant="primary" disabled={isPending} className="w-full">
