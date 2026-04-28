@@ -25,7 +25,7 @@ export function DeleteConfirmationPanel({
     return (
         <>
             <div className="space-y-3">
-                <p className="text-sm text-foreground-muted">
+                <p className="text-sm text-foreground-muted text-pretty text-justify">
                     {deleteTargetType === "application"
                         ? `¿Estás seguro de que quieres eliminar la candidatura a ${company}${role ? ` para el puesto ${role}` : ""}?`
                         : "¿Estás seguro de que quieres eliminar esta nota?"}

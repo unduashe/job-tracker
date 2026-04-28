@@ -134,18 +134,18 @@ export function ApplicationDetailsModal({
                         <div className="space-y-3">
                             <div>
                                 <p className="text-sm uppercase tracking-wide text-foreground-subtle">Empresa</p>
-                                <p className="text-sm font-semibold text-foreground">{application.company}</p>
+                                <p className="text-sm font-semibold text-foreground text-pretty text-justify">{application.company}</p>
                             </div>
                             {application.role ? (
                                 <div>
                                     <p className="text-sm uppercase tracking-wide text-foreground-subtle">Puesto</p>
-                                    <p className="text-sm italic text-foreground-muted">{application.role}</p>
+                                    <p className="text-sm italic text-foreground-muted text-pretty text-justify">{application.role}</p>
                                 </div>
                             ) : null}
                             {application.description ? (
                                 <div>
                                     <p className="text-sm uppercase tracking-wide text-foreground-subtle">Descripción</p>
-                                    <p className="text-sm text-foreground-muted">{application.description}</p>
+                                    <p className="text-sm text-foreground-muted text-pretty text-justify">{application.description}</p>
                                 </div>
                             ) : null}
                             <div>
@@ -184,7 +184,7 @@ export function ApplicationDetailsModal({
                                 ) : null}
 
                                 {notes.length === 0 && noteEditor?.type !== "create" ? (
-                                    <p className="rounded-md border border-dashed border-border-strong bg-surface-muted px-3 py-4 text-sm text-foreground-muted">
+                                    <p className="rounded-md border border-dashed border-border-strong bg-surface-muted px-3 py-4 text-sm text-foreground-muted text-pretty text-justify">
                                         Todavía no hay notas para esta candidatura.
                                     </p>
                                 ) : null}

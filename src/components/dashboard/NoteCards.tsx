@@ -78,8 +78,8 @@ export function NoteViewCard({ note, isDisabled, onEdit, onDelete }: NoteViewCar
     return (
         <article className="flex gap-2 rounded-md border border-border-subtle bg-surface-card p-3">
             <div className="flex flex-1 flex-col justify-center">
-                <p className="text-balance text-justify text-sm font-semibold text-foreground">{note.subject}</p>
-                <p className="mt-1 max-h-[15rem] overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-words pr-2 text-balance text-justify text-sm leading-6 text-foreground-muted">
+                <p className="text-pretty text-justify text-sm font-semibold text-foreground">{note.subject}</p>
+                <p className="mt-1 max-h-[15rem] overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-words pr-2 text-pretty text-justify text-sm leading-6 text-foreground-muted">
                     {note.content}
                 </p>
             </div>

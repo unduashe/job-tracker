@@ -65,8 +65,8 @@ function DraggableApplicationCard({ application, onOpenDetails }: DraggableAppli
                 isDragging ? "opacity-30" : ""
             }`}
         >
-            <h3 className="text-sm font-semibold text-foreground">{application.company}</h3>
-            {application.role ? <p className="mt-1 text-sm italic text-foreground-muted">{application.role}</p> : null}
+            <h3 className="text-sm font-semibold text-foreground text-pretty text-justify">{application.company}</h3>
+            {application.role ? <p className="mt-1 text-sm italic text-foreground-muted text-pretty text-justify">{application.role}</p> : null}
         </article>
     );
 }
