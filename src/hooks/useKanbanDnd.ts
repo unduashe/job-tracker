@@ -28,6 +28,7 @@ type UseKanbanDndResult = {
     columnsData: GroupedApplications;
     activeDragApp: ApplicationRow | null;
     isBoardEmpty: boolean;
+    dndError: { title: string; details: string[] } | null;
     handlers: {
         onDragStart: (event: DragStartEvent) => void;
         onDragOver: (event: DragOverEvent) => void;
@@ -35,6 +36,7 @@ type UseKanbanDndResult = {
         onDragEnd: (event: DragEndEvent) => Promise<void>;
         onScrollContainerMount: (status: ApplicationStatus, element: HTMLDivElement | null) => void;
     };
+    clearDndError: () => void;
 };
 
 /**
@@ -45,6 +47,7 @@ export function useKanbanDnd(groupedApplications: GroupedApplications): UseKanba
     const [activeDragApp, setActiveDragApp] = useState<ApplicationRow | null>(null);
     const [dragStartStatus, setDragStartStatus] = useState<ApplicationStatus | null>(null);
     const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
+    const [dndError, setDndError] = useState<{ title: string; details: string[] } | null>(null);
     const columnScrollContainersRef = useRef<Partial<Record<ApplicationStatus, HTMLDivElement>>>({});
     const lastAutoScrolledStatusRef = useRef<ApplicationStatus | null>(null);
 
@@ -200,6 +203,10 @@ export function useKanbanDnd(groupedApplications: GroupedApplications): UseKanba
         if (!result.success) {
             console.error("handleDragEnd error:", result.message);
             setOptimisticColumnsState(previousOptimisticColumnsState);
+            setDndError({
+                title: result.message,
+                details: result.details,
+            });
         }
     };
 
@@ -208,6 +215,7 @@ export function useKanbanDnd(groupedApplications: GroupedApplications): UseKanba
         columnsData,
         activeDragApp,
         isBoardEmpty,
+        dndError,
         handlers: {
             onDragStart: handleDragStart,
             onDragOver: handleDragOver,
@@ -215,5 +223,6 @@ export function useKanbanDnd(groupedApplications: GroupedApplications): UseKanba
             onDragEnd: handleDragEnd,
             onScrollContainerMount: handleScrollContainerMount,
         },
+        clearDndError: () => setDndError(null),
     };
 }

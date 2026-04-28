@@ -106,7 +106,7 @@ export function useApplicationNotes(
             return true;
         }
 
-        onError("No se pudo eliminar la nota", [result.message ?? "Inténtalo de nuevo en unos segundos."]);
+        onError(result.message, result.details);
         setIsSavingNote(false);
         return false;
     };

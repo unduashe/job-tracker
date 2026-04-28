@@ -34,6 +34,7 @@ type ActionSuccessResult = { success: true };
 type ActionErrorResult = { success: false; message: string; details: string[] };
 type ApplicationActionResult = ActionSuccessResult | ActionErrorResult;
 type NoteActionResult<T = ActionSuccessResult> = T | ActionErrorResult;
+type StatusActionResult = ActionSuccessResult | ActionErrorResult;
 
 function getStringField(formData: FormData, field: string): string | undefined {
     const value = formData.get(field);
@@ -110,14 +111,18 @@ export async function updateApplicationAction(formData: FormData): Promise<Appli
 /**
  * Elimina una candidatura del dashboard.
  */
-export async function deleteApplicationAction(id: string): Promise<{ success: boolean; message?: string }> {
+export async function deleteApplicationAction(id: string): Promise<ActionSuccessResult | ActionErrorResult> {
     try {
         await deleteApplication(id);
         revalidatePath("/dashboard");
         return { success: true };
     } catch (error) {
         console.error("deleteApplicationAction error:", error);
-        return { success: false, message: "No se pudo eliminar la aplicación" };
+        return {
+            success: false,
+            message: "No se pudo eliminar la aplicación",
+            details: getActionErrorDetails(error),
+        };
     }
 }
 
@@ -127,14 +132,18 @@ export async function deleteApplicationAction(id: string): Promise<{ success: bo
 export async function updateApplicationStatusAction(
     id: string,
     newStatus: ApplicationStatus,
-): Promise<{ success: true } | { success: false; message: string }> {
+): Promise<StatusActionResult> {
     try {
         await updateApplication(id, { status: newStatus });
         revalidatePath("/dashboard");
         return { success: true };
     } catch (error) {
         console.error("updateApplicationStatusAction error:", error);
-        return { success: false, message: "No se pudo actualizar el estado de la aplicación" };
+        return {
+            success: false,
+            message: "No se pudo actualizar el estado de la aplicación",
+            details: getActionErrorDetails(error),
+        };
     }
 }
 
@@ -201,14 +210,18 @@ export async function updateNoteAction(formData: FormData): Promise<NoteActionRe
 /**
  * Elimina una nota existente.
  */
-export async function deleteNoteAction(noteId: string): Promise<{ success: true } | { success: false; message: string }> {
+export async function deleteNoteAction(noteId: string): Promise<ActionSuccessResult | ActionErrorResult> {
     try {
         await deleteNote(noteId);
         revalidatePath("/dashboard");
         return { success: true };
     } catch (error) {
         console.error("deleteNoteAction error:", error);
-        return { success: false, message: "No se pudo eliminar la nota" };
+        return {
+            success: false,
+            message: "No se pudo eliminar la nota",
+            details: getActionErrorDetails(error),
+        };
     }
 }
 

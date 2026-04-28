@@ -14,6 +14,7 @@ import { ApplicationCard } from "@/components/dashboard/ApplicationCard";
 import { ApplicationDetailsModal } from "@/components/dashboard/ApplicationDetailsModal";
 import { ApplicationModal } from "@/components/dashboard/ApplicationModal";
 import { useDashboardResponsive } from "@/components/dashboard/DashboardResponsiveProvider";
+import { ErrorToast } from "@/components/ErrorToast";
 import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
 import { useKanbanDnd } from "@/hooks/useKanbanDnd";
 
@@ -137,6 +138,12 @@ export function KanbanBoard({ groupedApplications }: KanbanBoardProps) {
                 isOpen={isCreateApplicationModalOpen}
                 onClose={handleCloseCreateModal}
                 defaultStatus={createApplicationModalStatus}
+            />
+            <ErrorToast
+                isOpen={dnd.dndError !== null}
+                title={dnd.dndError?.title ?? ""}
+                details={dnd.dndError?.details ?? []}
+                onClose={dnd.clearDndError}
             />
         </>
     );

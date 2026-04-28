@@ -77,7 +77,7 @@ export function ApplicationDetailsModal({
 
         setErrorState({
             title: "No se pudo eliminar la aplicación",
-            details: [result.message ?? "Inténtalo de nuevo en unos segundos."],
+            details: result.details,
         });
         setIsDeleting(false);
     };
