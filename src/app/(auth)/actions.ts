@@ -62,18 +62,13 @@ function parseAuthInput(email: string, password: string): ParsedAuthInput {
  * Intenta iniciar sesión con email y contraseña.
  */
 export async function loginWithPassword(email: string, password: string): Promise<AuthActionResponse> {
-    const input = parseAuthInput(email, password);
-
-    if (!input.ok) {
-        return input.response;
-    }
 
     try {
         const cookieStore = await cookies();
         const supabase = createClient(cookieStore);
         const { error } = await supabase.auth.signInWithPassword({
-            email: input.email,
-            password: input.password,
+            email,
+            password,
         });
 
         if (error) {
