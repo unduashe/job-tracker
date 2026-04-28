@@ -37,9 +37,9 @@ type CardVisualProps = {
 
 function OverlayApplicationCard({ application }: CardVisualProps) {
     return (
-        <article className="scale-105 cursor-grabbing rounded-lg border border-zinc-300 bg-white p-4 shadow-xl ring-1 ring-black/5">
-            <h3 className="text-sm font-semibold text-zinc-900">{application.company}</h3>
-            {application.role ? <p className="mt-1 text-sm italic text-zinc-600">{application.role}</p> : null}
+        <article className="scale-105 cursor-grabbing rounded-lg border border-brand-100 bg-surface-card p-4 shadow-modal ring-1 ring-brand-100">
+            <h3 className="text-sm font-semibold text-foreground">{application.company}</h3>
+            {application.role ? <p className="mt-1 text-sm italic text-foreground-muted">{application.role}</p> : null}
         </article>
     );
 }
@@ -61,12 +61,12 @@ function DraggableApplicationCard({ application, onOpenDetails }: DraggableAppli
             {...listeners}
             {...attributes}
             onClick={() => onOpenDetails(application)}
-            className={`rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition-all hover:cursor-pointer hover:border-zinc-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 ${
+            className={`rounded-lg border border-border-subtle bg-surface-card p-4 shadow-sm transition-all hover:cursor-pointer hover:border-brand-100 hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                 isDragging ? "opacity-30" : ""
             }`}
         >
-            <h3 className="text-sm font-semibold text-zinc-900">{application.company}</h3>
-            {application.role ? <p className="mt-1 text-sm italic text-zinc-600">{application.role}</p> : null}
+            <h3 className="text-sm font-semibold text-foreground">{application.company}</h3>
+            {application.role ? <p className="mt-1 text-sm italic text-foreground-muted">{application.role}</p> : null}
         </article>
     );
 }

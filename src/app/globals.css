@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbfaf7;
+  --foreground: #1f2933;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-foreground-muted: #667085;
+  --color-foreground-subtle: #98a2b3;
+  --color-surface-canvas: #f5f1ea;
+  --color-surface-panel: #fffdf8;
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #faf7f0;
+  --color-border-subtle: #e7dfd4;
+  --color-border-strong: #d7cbbd;
+  --color-brand-50: #eef6f7;
+  --color-brand-100: #d8ecef;
+  --color-brand-500: #357c89;
+  --color-brand-600: #256875;
+  --color-brand-700: #1f5661;
+  --color-accent-50: #fff8eb;
+  --color-accent-100: #ffedc7;
+  --color-accent-600: #a86712;
+  --color-success-50: #edfdf5;
+  --color-success-100: #d5f7e5;
+  --color-success-700: #047857;
+  --color-danger-50: #fff1f2;
+  --color-danger-100: #ffe4e6;
+  --color-danger-200: #fecdd3;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-900: #7f1d1d;
+  --shadow-card: 0 1px 2px rgb(31 41 51 / 0.06), 0 8px 24px rgb(31 41 51 / 0.05);
+  --shadow-card-hover: 0 10px 30px rgb(31 41 51 / 0.09);
+  --shadow-modal: 0 24px 60px rgb(31 41 51 / 0.18);
+  --font-sans: var(--font-app-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-app-sans), Arial, Helvetica, sans-serif;
 }

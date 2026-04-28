@@ -71,7 +71,7 @@ export function ApplicationForm({
                 ) : null}
 
                 <div className="space-y-1">
-                    <label htmlFor="company" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="company" className="text-sm font-medium text-foreground">
                         Empresa
                     </label>
                     <input
@@ -80,12 +80,12 @@ export function ApplicationForm({
                         type="text"
                         required
                         defaultValue={initialData?.company ?? ""}
-                        className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
+                        className="w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                     />
                 </div>
 
                 <div className="space-y-1">
-                    <label htmlFor="role" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="role" className="text-sm font-medium text-foreground">
                         Puesto
                     </label>
                     <input
@@ -93,12 +93,12 @@ export function ApplicationForm({
                         name="role"
                         type="text"
                         defaultValue={initialData?.role ?? ""}
-                        className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
+                        className="w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                     />
                 </div>
 
                 <div className="space-y-1">
-                    <label htmlFor="description" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="description" className="text-sm font-medium text-foreground">
                         Descripción
                     </label>
                     <textarea
@@ -106,19 +106,19 @@ export function ApplicationForm({
                         name="description"
                         rows={4}
                         defaultValue={initialData?.description ?? ""}
-                        className="w-full resize-none rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
+                        className="w-full resize-none rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                     />
                 </div>
 
                 <div className="space-y-1">
-                    <label htmlFor="status" className="text-sm font-medium text-zinc-800">
+                    <label htmlFor="status" className="text-sm font-medium text-foreground">
                         Estado
                     </label>
                     <select
                         id="status"
                         name="status"
                         defaultValue={statusDefaultValue}
-                        className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition-colors focus:border-zinc-500"
+                        className="w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                     >
                         {APPLICATION_STATUS.map((status) => (
                             <option key={status} value={status}>

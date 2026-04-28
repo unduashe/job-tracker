@@ -10,14 +10,14 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const VARIANT_STYLES: Record<ButtonVariant, string> = {
     primary:
-        "bg-zinc-900 text-white hover:cursor-pointer hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-500",
+        "bg-brand-600 text-white shadow-sm hover:cursor-pointer hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-brand-100 disabled:text-brand-700",
     secondary:
-        "border border-zinc-300 bg-white text-zinc-700 hover:cursor-pointer hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60",
+        "border border-border-strong bg-surface-card text-foreground hover:cursor-pointer hover:border-brand-100 hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-60",
     danger:
-        "bg-red-600 text-white hover:cursor-pointer hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400",
+        "bg-danger-600 text-white shadow-sm hover:cursor-pointer hover:bg-danger-700 disabled:cursor-not-allowed disabled:bg-danger-100 disabled:text-danger-700",
     "danger-outline":
-        "border border-red-200 bg-white text-red-700 hover:cursor-pointer hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60",
-    ghost: "text-zinc-700 hover:cursor-pointer hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-60",
+        "border border-danger-200 bg-surface-card text-danger-700 hover:cursor-pointer hover:bg-danger-50 disabled:cursor-not-allowed disabled:opacity-60",
+    ghost: "text-foreground-muted hover:cursor-pointer hover:bg-surface-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60",
 };
 
 /**
@@ -25,7 +25,7 @@ const VARIANT_STYLES: Record<ButtonVariant, string> = {
  */
 export function Button({ variant = "primary", className = "", type = "button", ...props }: ButtonProps) {
     const mergedClassName = [
-        "rounded-md px-4 py-2 text-sm font-medium transition-colors",
+        "rounded-md px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel",
         VARIANT_STYLES[variant],
         className,
     ]

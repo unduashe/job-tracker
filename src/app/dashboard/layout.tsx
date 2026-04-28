@@ -17,7 +17,7 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
     const email = user.email ?? "usuario";
 
     return (
-        <div className="flex h-dvh flex-col overflow-hidden bg-zinc-100">
+        <div className="flex h-dvh flex-col overflow-hidden bg-surface-canvas">
             <Navbar email={email} />
             <main className="flex min-h-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
         </div>

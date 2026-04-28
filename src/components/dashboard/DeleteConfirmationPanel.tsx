@@ -25,7 +25,7 @@ export function DeleteConfirmationPanel({
     return (
         <>
             <div className="space-y-3">
-                <p className="text-sm text-zinc-700">
+                <p className="text-sm text-foreground-muted">
                     {deleteTargetType === "application"
                         ? `¿Estás seguro de que quieres eliminar la candidatura a ${company}${role ? ` para el puesto ${role}` : ""}?`
                         : "¿Estás seguro de que quieres eliminar esta nota?"}
@@ -36,7 +36,7 @@ export function DeleteConfirmationPanel({
                     variant="secondary"
                     onClick={onCancel}
                     disabled={isDeleting}
-                    className="flex-1 hover:bg-zinc-50"
+                    className="flex-1"
                 >
                     Cancelar
                 </Button>

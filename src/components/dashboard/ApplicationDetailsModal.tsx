@@ -107,13 +107,13 @@ export function ApplicationDetailsModal({
     }
 
     return (
-        <div className="fixed inset-0 z-[55] flex items-center justify-center bg-black/50 p-4" onClick={handleClose}>
+        <div className="fixed inset-0 z-[55] flex items-center justify-center bg-foreground/45 p-4" onClick={handleClose}>
             <div
-                className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl"
+                className="w-full max-w-lg rounded-xl border border-border-subtle bg-surface-panel p-6 shadow-modal"
                 onClick={(event) => event.stopPropagation()}
             >
                 <header className="mb-4 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-zinc-900">
+                    <h3 className="text-lg font-semibold text-foreground">
                         {mode === "view"
                             ? "Detalle de candidatura"
                             : mode === "edit"
@@ -125,7 +125,7 @@ export function ApplicationDetailsModal({
                         ariaLabel="Cerrar modal de detalles"
                         icon={<CloseIcon />}
                         disabled={isDeleting || isSavingNote}
-                        className="text-zinc-500 hover:cursor-pointer hover:bg-zinc-100 hover:text-zinc-700"
+                        className="text-foreground-muted hover:cursor-pointer hover:bg-surface-muted hover:text-foreground"
                     />
                 </header>
 
@@ -133,36 +133,36 @@ export function ApplicationDetailsModal({
                     <>
                         <div className="space-y-3">
                             <div>
-                                <p className="text-sm uppercase tracking-wide text-zinc-500">Empresa</p>
-                                <p className="text-sm font-semibold text-zinc-900">{application.company}</p>
+                                <p className="text-sm uppercase tracking-wide text-foreground-subtle">Empresa</p>
+                                <p className="text-sm font-semibold text-foreground">{application.company}</p>
                             </div>
                             {application.role ? (
                                 <div>
-                                    <p className="text-sm uppercase tracking-wide text-zinc-500">Puesto</p>
-                                    <p className="text-sm italic text-zinc-700">{application.role}</p>
+                                    <p className="text-sm uppercase tracking-wide text-foreground-subtle">Puesto</p>
+                                    <p className="text-sm italic text-foreground-muted">{application.role}</p>
                                 </div>
                             ) : null}
                             {application.description ? (
                                 <div>
-                                    <p className="text-sm uppercase tracking-wide text-zinc-500">Descripción</p>
-                                    <p className="text-sm text-zinc-700">{application.description}</p>
+                                    <p className="text-sm uppercase tracking-wide text-foreground-subtle">Descripción</p>
+                                    <p className="text-sm text-foreground-muted">{application.description}</p>
                                 </div>
                             ) : null}
                             <div>
-                                <p className="text-sm uppercase tracking-wide text-zinc-500">Estado</p>
-                                <p className="text-sm text-zinc-800">{APPLICATION_STATUS_LABELS[application.status]}</p>
+                                <p className="text-sm uppercase tracking-wide text-foreground-subtle">Estado</p>
+                                <p className="text-sm text-foreground">{APPLICATION_STATUS_LABELS[application.status]}</p>
                             </div>
                         </div>
 
                         <section className="mt-5">
                             <div className="mb-2 flex items-center justify-between">
-                                <p className="text-sm uppercase tracking-wide text-zinc-500">Notas</p>
+                                <p className="text-sm uppercase tracking-wide text-foreground-subtle">Notas</p>
                                 <IconButton
                                     onClick={() => setNoteEditor({ type: "create", subject: "", content: "" })}
                                     ariaLabel="Añadir nota"
                                     icon={<PlusIcon />}
                                     disabled={noteEditor !== null}
-                                    className="text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"
+                                    className="text-foreground-muted hover:bg-brand-50 hover:text-brand-700"
                                 />
                             </div>
 
@@ -184,7 +184,7 @@ export function ApplicationDetailsModal({
                                 ) : null}
 
                                 {notes.length === 0 && noteEditor?.type !== "create" ? (
-                                    <p className="rounded-md border border-dashed border-zinc-300 px-3 py-4 text-sm text-zinc-500">
+                                    <p className="rounded-md border border-dashed border-border-strong bg-surface-muted px-3 py-4 text-sm text-foreground-muted">
                                         Todavía no hay notas para esta candidatura.
                                     </p>
                                 ) : null}

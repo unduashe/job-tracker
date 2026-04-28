@@ -21,17 +21,17 @@ export function ApplicationModal({ isOpen, onClose, defaultStatus }: Application
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/45 p-4"
             onClick={onClose}
         >
-            <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl" onClick={(event) => event.stopPropagation()}>
+            <div className="w-full max-w-lg rounded-xl border border-border-subtle bg-surface-panel p-6 shadow-modal" onClick={(event) => event.stopPropagation()}>
                 <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-zinc-900">Nueva candidatura</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Nueva candidatura</h3>
                     <IconButton
                         onClick={onClose}
                         ariaLabel="Cerrar modal"
                         icon={<CloseIcon />}
-                        className="text-zinc-500 hover:cursor-pointer hover:bg-zinc-100 hover:text-zinc-700"
+                        className="text-foreground-muted hover:cursor-pointer hover:bg-surface-muted hover:text-foreground"
                     />
                 </div>
 

@@ -63,18 +63,18 @@ export function LoginForm() {
         <>
             <form onSubmit={handleSubmit} className="space-y-5">
                 {bannerMessage ? (
-                    <p aria-live="polite" className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-800">
+                    <p aria-live="polite" className="rounded-lg border border-success-100 bg-success-50 px-3 py-2 text-sm text-success-700">
                         {bannerMessage}
                     </p>
                 ) : null}
                 {bannerError ? (
-                    <p aria-live="assertive" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
+                    <p aria-live="assertive" className="rounded-lg border border-danger-100 bg-danger-50 px-3 py-2 text-sm text-danger-700">
                         {bannerError}
                     </p>
                 ) : null}
 
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-zinc-700" htmlFor="email">
+                    <label className="block text-sm font-medium text-foreground" htmlFor="email">
                         Correo electrónico
                     </label>
                     <input
@@ -85,13 +85,13 @@ export function LoginForm() {
                         required
                         pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
                         title="Introduce un correo electrónico válido"
-                        className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-300"
+                        className="w-full rounded-lg border border-border-strong bg-surface-card px-3 py-2 text-foreground outline-none transition placeholder:text-foreground-subtle focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                         placeholder="tu@email.com"
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-zinc-700" htmlFor="login-password">
+                    <label className="block text-sm font-medium text-foreground" htmlFor="login-password">
                         Contraseña
                     </label>
                     <PasswordInput
@@ -105,7 +105,7 @@ export function LoginForm() {
                     <p className="text-right text-sm">
                         <Link
                             href="/forgot-password"
-                            className="font-medium text-zinc-700 underline underline-offset-2 hover:text-zinc-900"
+                            className="font-medium text-brand-700 underline underline-offset-2 hover:text-brand-600"
                         >
                             Olvidé mi contraseña
                         </Link>
@@ -116,9 +116,9 @@ export function LoginForm() {
                     {isPending ? "Iniciando sesión..." : "Entrar"}
                 </Button>
 
-                <p className="text-center text-sm text-zinc-600">
+                <p className="text-center text-sm text-foreground-muted">
                     ¿No tienes cuenta?{" "}
-                    <Link href="/register" className="font-medium text-zinc-900 underline underline-offset-2">
+                    <Link href="/register" className="font-medium text-brand-700 underline underline-offset-2 hover:text-brand-600">
                         Regístrate
                     </Link>
                 </p>

@@ -72,7 +72,7 @@ export function ResetPasswordForm({ userEmail }: ResetPasswordFormProps) {
         <>
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-zinc-700" htmlFor="reset-email">
+                    <label className="block text-sm font-medium text-foreground" htmlFor="reset-email">
                         Correo electrónico
                     </label>
                     <input
@@ -82,13 +82,13 @@ export function ResetPasswordForm({ userEmail }: ResetPasswordFormProps) {
                         disabled
                         readOnly
                         autoComplete="email"
-                        className="w-full cursor-not-allowed rounded-lg border border-zinc-200 bg-zinc-100 px-3 py-2 text-zinc-600 outline-none"
+                        className="w-full cursor-not-allowed rounded-lg border border-border-subtle bg-surface-muted px-3 py-2 text-foreground-muted outline-none"
                         tabIndex={-1}
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-zinc-700" htmlFor="reset-password">
+                    <label className="block text-sm font-medium text-foreground" htmlFor="reset-password">
                         Nueva contraseña
                     </label>
                     <PasswordInput
@@ -103,7 +103,7 @@ export function ResetPasswordForm({ userEmail }: ResetPasswordFormProps) {
 
                 <div className="space-y-2">
                     <label
-                        className="block text-sm font-medium text-zinc-700"
+                        className="block text-sm font-medium text-foreground"
                         htmlFor="reset-confirm-password"
                     >
                         Confirmar contraseña

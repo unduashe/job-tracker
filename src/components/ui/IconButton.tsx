@@ -23,7 +23,7 @@ export function IconButton({
     className = "",
 }: IconButtonProps) {
     const mergedClassName = [
-        "rounded-md p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1",
+        "rounded-md p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 focus-visible:ring-offset-surface-panel",
         "disabled:cursor-not-allowed disabled:opacity-60",
         className,
     ]

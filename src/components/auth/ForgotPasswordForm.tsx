@@ -56,7 +56,7 @@ export function ForgotPasswordForm() {
         <>
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-zinc-700" htmlFor="forgot-email">
+                    <label className="block text-sm font-medium text-foreground" htmlFor="forgot-email">
                         Correo electrónico
                     </label>
                     <input
@@ -67,7 +67,7 @@ export function ForgotPasswordForm() {
                         required
                         pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
                         title="Introduce un correo electrónico válido"
-                        className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-300"
+                        className="w-full rounded-lg border border-border-strong bg-surface-card px-3 py-2 text-foreground outline-none transition placeholder:text-foreground-subtle focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                         placeholder="tu@email.com"
                     />
                 </div>
@@ -77,13 +77,13 @@ export function ForgotPasswordForm() {
                 </Button>
 
                 {successMessage ? (
-                    <p aria-live="polite" className="text-sm text-green-700">
+                    <p aria-live="polite" className="text-sm text-success-700">
                         {successMessage}
                     </p>
                 ) : null}
 
-                <p className="text-center text-sm text-zinc-600">
-                    <Link href="/login" className="font-medium text-zinc-900 underline underline-offset-2">
+                <p className="text-center text-sm text-foreground-muted">
+                    <Link href="/login" className="font-medium text-brand-700 underline underline-offset-2 hover:text-brand-600">
                         Volver a iniciar sesión
                     </Link>
                 </p>

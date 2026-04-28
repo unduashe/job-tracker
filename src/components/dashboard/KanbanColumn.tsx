@@ -43,17 +43,17 @@ export function KanbanColumn({
         <>
             <section
                 ref={setNodeRef}
-                className={`flex max-h-full min-h-0 min-w-72 basis-72 flex-1 flex-col self-start overflow-hidden rounded-xl border border-zinc-200 shadow-sm ${
-                    isOver ? "bg-zinc-50" : "bg-white"
+                className={`flex max-h-full min-h-0 min-w-72 basis-72 flex-1 flex-col self-start overflow-hidden rounded-xl border border-border-subtle shadow-card ${
+                    isOver ? "bg-brand-50" : "bg-surface-panel"
                 }`}
             >
-                <header className="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
-                    <h2 className="text-sm font-semibold text-zinc-800">{title}</h2>
+                <header className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
+                    <h2 className="text-sm font-semibold text-foreground">{title}</h2>
                     <IconButton
                         onClick={() => onOpenCreateModal(status)}
                         ariaLabel={`Añadir candidatura en ${title}`}
                         icon={<PlusIcon />}
-                        className="text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"
+                        className="text-foreground-muted hover:bg-brand-50 hover:text-brand-700"
                     />
                 </header>
 
@@ -62,7 +62,7 @@ export function KanbanColumn({
                     className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-3"
                 >
                     {showEmptyState ? (
-                        <p className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600">
+                        <p className="rounded-lg border border-dashed border-border-strong bg-surface-muted p-3 text-sm text-foreground-muted">
                             Empieza creando tu primera candidatura con el botón +
                         </p>
                     ) : null}

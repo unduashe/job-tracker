@@ -83,7 +83,7 @@ export function RegisterForm() {
         <>
             <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-zinc-700" htmlFor="email">
+                    <label className="block text-sm font-medium text-foreground" htmlFor="email">
                         Correo electrónico
                     </label>
                     <input
@@ -94,13 +94,13 @@ export function RegisterForm() {
                         required
                         pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
                         title="Introduce un correo electrónico válido"
-                        className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 outline-none transition focus:border-zinc-500 focus:ring-2 focus:ring-zinc-300"
+                        className="w-full rounded-lg border border-border-strong bg-surface-card px-3 py-2 text-foreground outline-none transition placeholder:text-foreground-subtle focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                         placeholder="tu@email.com"
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <label className="block text-sm font-medium text-zinc-700" htmlFor="register-password">
+                    <label className="block text-sm font-medium text-foreground" htmlFor="register-password">
                         Contraseña
                     </label>
                     <PasswordInput
@@ -118,14 +118,14 @@ export function RegisterForm() {
                 </Button>
 
                 {feedbackState?.success ? (
-                    <p aria-live="polite" className="text-sm text-green-700">
+                    <p aria-live="polite" className="text-sm text-success-700">
                         {feedbackState.message}
                     </p>
                 ) : null}
 
-                <p className="text-center text-sm text-zinc-600">
+                <p className="text-center text-sm text-foreground-muted">
                     ¿Ya tienes cuenta?{" "}
-                    <Link href="/login" className="font-medium text-zinc-900 underline underline-offset-2">
+                    <Link href="/login" className="font-medium text-brand-700 underline underline-offset-2 hover:text-brand-600">
                         Inicia sesión
                     </Link>
                 </p>
