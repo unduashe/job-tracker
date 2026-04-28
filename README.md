@@ -1,37 +1,106 @@
-# My Job Tracker App
-Project to manage job applications, with kanban functionalities, notifications and statistics.
+# Job Tracker
 
-## Getting Started
+Herramienta tipo Kanban para organizar candidaturas de empleo con foco en simplicidad, rapidez y seguimiento real durante la búsqueda de trabajo.
 
-First, run the development server:
+## Stack tecnológico
+
+- Next.js (App Router)
+- React + TypeScript
+- Tailwind CSS
+- Supabase (Auth + base de datos con RLS)
+- Server Actions para operaciones de backend
+- dnd-kit para drag and drop en el tablero
+
+## Funcionalidades principales
+
+- Registro, login y recuperación de contraseña
+- Dashboard con columnas Kanban por estado de candidatura
+- CRUD de candidaturas
+- Notas asociadas a cada candidatura
+- Cambio de estado mediante drag and drop
+
+## Requisitos previos
+
+- Node.js 20 o superior
+- npm 10 o superior
+- Proyecto de Supabase configurado
+
+## Variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto con:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=tu_supabase_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=tu_supabase_anon_publishable_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+Notas:
+- En producción, `NEXT_PUBLIC_SITE_URL` debe apuntar a tu dominio público real.
+- Este valor se usa para generar enlaces de recuperación de contraseña de forma segura.
+
+## Instalación
+
+```bash
+npm install
+```
+
+## Ejecución en local
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La app quedará disponible en [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts disponibles
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev     # entorno de desarrollo
+npm run build   # build de producción
+npm run start   # arranque en modo producción
+npm run lint    # revisión de lint
+```
 
-## Learn More
+## Estructura del proyecto
 
-To learn more about Next.js, take a look at the following resources:
+```text
+src/
+  app/                    # Rutas (App Router) y Server Actions
+  components/             # Componentes de UI y dashboard
+  hooks/                  # Hooks de lógica de cliente
+  lib/
+    applications/         # Lógica de candidaturas y notas
+    auth/                 # Utilidades de autenticación
+    supabase/             # Clientes Supabase (server/client)
+    utils/                # Utilidades compartidas
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Seguridad y autorización
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Autenticación gestionada por Supabase Auth
+- El acceso a rutas protegidas se controla desde `src/proxy.ts`.
+- Las operaciones de backend se ejecutan en Server Actions.
+- La autorización por usuario se valida en la capa de acceso a datos en cada operación.
+- Supabase con RLS es la capa final de protección a nivel de filas.
 
-## Deploy on Vercel
+## Decisiones técnicas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Uso de Server Actions para evitar exponer API pública innecesaria
+- Validación de ownership en backend + RLS como capa final de seguridad
+- Actualizaciones optimistas en drag and drop para mejorar UX
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Limitaciones actuales
+
+- El orden dentro de cada columna no es personalizable (solo cambio de estado)
+- Posibles condiciones de carrera en interacciones rápidas de drag and drop
+- Revalidación completa del dashboard en lugar de invalidación granular
+
+## Objetivo del proyecto
+
+Este proyecto se ha desarrollado como aplicación real y como ejercicio de aprendizaje para:
+
+- Profundizar en arquitecturas full-stack con Next.js App Router
+- Trabajar con Supabase y políticas RLS
+- Diseñar interfaces interactivas con drag and drop
+- Aplicar buenas prácticas de UX en herramientas de uso diario
