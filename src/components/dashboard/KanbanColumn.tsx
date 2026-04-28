@@ -11,6 +11,7 @@ import { PlusIcon } from "@/components/ui/icons";
 type KanbanColumnProps = {
     title: string;
     status: ApplicationStatus;
+    isActiveOnMobile: boolean;
     applications: ApplicationRow[];
     isBoardEmpty: boolean;
     onOpenCreateModal: (status: ApplicationStatus) => void;
@@ -24,6 +25,7 @@ type KanbanColumnProps = {
 export function KanbanColumn({
     title,
     status,
+    isActiveOnMobile,
     applications,
     isBoardEmpty,
     onOpenCreateModal,
@@ -43,7 +45,7 @@ export function KanbanColumn({
         <>
             <section
                 ref={setNodeRef}
-                className={`flex max-h-full min-h-0 min-w-72 basis-72 flex-1 flex-col self-start overflow-hidden rounded-xl border border-border-subtle shadow-card ${
+                className={`${isActiveOnMobile ? "flex" : "hidden"} max-h-full min-h-0 min-w-0 w-full basis-full flex-1 flex-col self-start overflow-hidden rounded-xl border border-border-subtle shadow-card lg:flex lg:min-w-72 lg:basis-72 ${
                     isOver ? "bg-brand-50" : "bg-surface-panel"
                 }`}
             >

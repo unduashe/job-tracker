@@ -75,7 +75,7 @@ export function ErrorToast({
             aria-hidden={!isVisible}
             data-state={isVisible ? "open" : "closed"}
             onClick={(event) => event.stopPropagation()}
-            className="fixed right-4 top-4 z-[100] w-full max-w-md transform rounded-xl border border-danger-200 bg-danger-50 p-4 shadow-card duration-300 ease-out data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:transition-none data-[state=open]:pointer-events-auto data-[state=closed]:translate-x-[120%] data-[state=closed]:opacity-0 data-[state=closed]:transition data-[state=closed]:pointer-events-none sm:right-6 lg:right-8"
+            className="fixed left-3 right-3 top-3 z-[100] w-auto transform rounded-xl border border-danger-200 bg-danger-50 p-3 shadow-card duration-300 ease-out data-[state=open]:translate-x-0 data-[state=open]:opacity-100 data-[state=open]:transition-none data-[state=open]:pointer-events-auto data-[state=closed]:translate-x-[120%] data-[state=closed]:opacity-0 data-[state=closed]:transition data-[state=closed]:pointer-events-none sm:left-auto sm:right-6 sm:top-4 sm:w-full sm:max-w-md sm:p-4 lg:right-8"
         >
             <div className="mb-2 flex items-start justify-between gap-3">
                 <h4 className="text-sm font-semibold text-danger-900">{title}</h4>
