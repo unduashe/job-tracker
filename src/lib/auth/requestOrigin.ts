@@ -11,11 +11,13 @@ export async function getRequestOrigin(): Promise<string> {
         return configured;
     }
 
+    if (process.env.NODE_ENV === "production") {
+        throw new Error("Configura NEXT_PUBLIC_SITE_URL para generar enlaces de autenticación seguros.");
+    }
+
     const headersList = await headers();
     const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
-    const proto =
-        headersList.get("x-forwarded-proto") ??
-        (process.env.NODE_ENV === "production" ? "https" : "http");
+    const proto = headersList.get("x-forwarded-proto") ?? "http";
 
     if (!host) {
         return "http://localhost:3000";
