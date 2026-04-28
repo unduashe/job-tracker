@@ -118,7 +118,7 @@ export function ApplicationForm({
                         id="status"
                         name="status"
                         defaultValue={statusDefaultValue}
-                        className="w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                        className="w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-100 hover:cursor-pointer"
                     >
                         {APPLICATION_STATUS.map((status) => (
                             <option key={status} value={status}>

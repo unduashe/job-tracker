@@ -36,7 +36,7 @@ export function PasswordInput({ id: idProp, name, className = "", disabled, ...r
                 type="button"
                 disabled={disabled}
                 onClick={() => setVisible((previous) => !previous)}
-                className="absolute inset-y-0 right-2 flex items-center rounded p-1 text-foreground-muted transition hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="absolute inset-y-0 right-2 flex items-center rounded p-1 text-foreground-muted transition hover:text-brand-700 hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
                 aria-controls={id}
             >

@@ -162,7 +162,7 @@ export function ApplicationDetailsModal({
                                     ariaLabel="Añadir nota"
                                     icon={<PlusIcon />}
                                     disabled={noteEditor !== null}
-                                    className="text-foreground-muted hover:bg-brand-50 hover:text-brand-700"
+                                    className="text-foreground-muted hover:bg-brand-50 hover:text-brand-700 hover:cursor-pointer"
                                 />
                             </div>
 

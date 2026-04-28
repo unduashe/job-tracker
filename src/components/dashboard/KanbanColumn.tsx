@@ -53,7 +53,7 @@ export function KanbanColumn({
                         onClick={() => onOpenCreateModal(status)}
                         ariaLabel={`Añadir candidatura en ${title}`}
                         icon={<PlusIcon />}
-                        className="text-foreground-muted hover:bg-brand-50 hover:text-brand-700"
+                        className="text-foreground-muted hover:bg-brand-50 hover:text-brand-700 hover:cursor-pointer"
                     />
                 </header>
 

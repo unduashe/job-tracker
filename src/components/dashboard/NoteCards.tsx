@@ -57,14 +57,14 @@ export function NoteEditorCard({
                     ariaLabel="Guardar nota"
                     icon={<CheckIcon />}
                     disabled={isSaving}
-                    className="text-success-700 hover:cursor-pointer hover:bg-success-50"
+                    className="text-success-700 hover:cursor-pointer hover:bg-success-100"
                 />
                 <IconButton
                     onClick={onCancel}
                     ariaLabel="Cancelar edición de nota"
                     icon={<CloseIcon />}
                     disabled={isSaving}
-                    className="text-foreground-muted hover:cursor-pointer hover:bg-surface-card hover:text-foreground"
+                    className="text-danger-700 hover:cursor-pointer hover:bg-danger-100"
                 />
             </div>
         </article>
