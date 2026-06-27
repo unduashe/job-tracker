@@ -9,7 +9,7 @@ import {
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
-import { updateApplicationStatusAction } from "@/app/dashboard/actions";
+import { useDashboardData } from "@/components/dashboard/DashboardDataProvider";
 import type { ApplicationStatus } from "@/lib/applications/schema";
 import type { ApplicationRow, GroupedApplications } from "@/lib/applications/types";
 import {
@@ -41,8 +41,11 @@ type UseKanbanDndResult = {
 
 /**
  * Encapsula la lógica de drag and drop del tablero Kanban.
+ * Lee `groupedApplications` y `updateApplicationStatus` del provider para
+ * que se trate igual independientemente de donde vengan los datos (auth/guest).
  */
-export function useKanbanDnd(groupedApplications: GroupedApplications): UseKanbanDndResult {
+export function useKanbanDnd(): UseKanbanDndResult {
+    const { groupedApplications, updateApplicationStatus } = useDashboardData();
     const [optimisticColumnsState, setOptimisticColumnsState] = useState<OptimisticColumnsState | null>(null);
     const [activeDragApp, setActiveDragApp] = useState<ApplicationRow | null>(null);
     const [dragStartStatus, setDragStartStatus] = useState<ApplicationStatus | null>(null);
@@ -195,7 +198,7 @@ export function useKanbanDnd(groupedApplications: GroupedApplications): UseKanba
             data: nextColumnsData,
         });
 
-        const result = await updateApplicationStatusAction(applicationId, destinationStatus);
+        const result = await updateApplicationStatus(applicationId, destinationStatus);
         setDragStartStatus(null);
         setDragStartIndex(null);
         lastAutoScrolledStatusRef.current = null;
@@ -207,7 +210,12 @@ export function useKanbanDnd(groupedApplications: GroupedApplications): UseKanba
                 title: result.message,
                 details: result.details,
             });
+            return;
         }
+
+        // El provider ya actualizó por lo que descartamos el optimistic
+        // para que el render vuelva a la fuente de verdad.
+        setOptimisticColumnsState(null);
     };
 
     return {

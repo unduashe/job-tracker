@@ -1,27 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import { logoutAction } from "@/app/dashboard/actions";
 import { useDashboardResponsive } from "@/components/dashboard/DashboardResponsiveProvider";
+import { useDashboardMode } from "@/components/dashboard/DashboardModeProvider";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { CloseIcon, LogOutIcon } from "@/components/ui/icons";
 import { KANBAN_COLUMNS } from "@/lib/applications/constants";
 import type { ApplicationStatus } from "@/lib/applications/schema";
 
-type DashboardMobileSidebarProps = {
-    email: string;
-};
-
 /**
- * Sidebar móvil con selector de columna activa y cierre de sesión.
+ * Sidebar móvil con selector de columna activa y acción de sesión.
+ * Cierre de sesión en modo auth; acceso a login/registro en modo invitado.
  */
-export function DashboardMobileSidebar({ email }: DashboardMobileSidebarProps) {
+export function DashboardMobileSidebar() {
     const {
         activeStatus,
         setActiveStatus,
         isMobileSidebarOpen,
         closeMobileSidebar,
     } = useDashboardResponsive();
+    const session = useDashboardMode();
 
     const handleSelectStatus = (status: ApplicationStatus) => {
         if (status === activeStatus) {
@@ -52,9 +52,15 @@ export function DashboardMobileSidebar({ email }: DashboardMobileSidebarProps) {
                 aria-hidden={!isMobileSidebarOpen}
             >
                 <div className="relative mb-4 min-h-8 border-b border-border-subtle pb-3">
-                    <p className="hidden truncate pr-10 text-sm font-semibold text-foreground max-md:block">
-                        Hola {email}
-                    </p>
+                    {session.mode === "auth" ? (
+                        <p className="hidden truncate pr-10 text-sm font-semibold text-foreground max-md:block">
+                            Hola {session.email}
+                        </p>
+                    ) : (
+                        <p className="hidden truncate pr-10 text-sm font-semibold text-foreground max-md:block">
+                            Modo invitado
+                        </p>
+                    )}
                     <IconButton
                         onClick={closeMobileSidebar}
                         ariaLabel="Cerrar panel"
@@ -85,18 +91,35 @@ export function DashboardMobileSidebar({ email }: DashboardMobileSidebarProps) {
                     })}
                 </nav>
 
-                <div className="mt-4 flex justify-end border-t border-border-subtle pt-4">
-                    <form action={logoutAction}>
-                        <Button
-                            type="submit"
-                            variant="secondary"
-                            className="inline-flex items-center gap-2"
+                {session.mode === "auth" ? (
+                    <div className="mt-4 flex justify-end border-t border-border-subtle pt-4">
+                        <form action={logoutAction}>
+                            <Button
+                                type="submit"
+                                variant="secondary"
+                                className="inline-flex items-center gap-2"
+                            >
+                                <LogOutIcon size={18} />
+                                Cerrar sesión
+                            </Button>
+                        </form>
+                    </div>
+                ) : (
+                    <div className="mt-4 flex flex-col gap-2 border-t border-border-subtle pt-4">
+                        <Link
+                            href="/login"
+                            className="w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-center text-sm font-semibold text-foreground transition-colors hover:border-brand-100 hover:bg-brand-50"
                         >
-                            <LogOutIcon size={18} />
-                            Cerrar sesión
-                        </Button>
-                    </form>
-                </div>
+                            Iniciar sesión
+                        </Link>
+                        <Link
+                            href="/register"
+                            className="w-full rounded-md bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-700"
+                        >
+                            Crear cuenta
+                        </Link>
+                    </div>
+                )}
             </aside>
         </div>
     );

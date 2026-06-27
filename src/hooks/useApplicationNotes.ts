@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import { createNoteAction, deleteNoteAction, updateNoteAction } from "@/app/dashboard/actions";
+import { useDashboardData } from "@/components/dashboard/DashboardDataProvider";
 import { sortNotesByDate } from "@/lib/applications/notes/utils";
 import type { NoteRow } from "@/lib/applications/notes/types";
 
@@ -23,12 +23,20 @@ type UseApplicationNotesResult = {
 
 /**
  * Gestiona el estado y operaciones CRUD de notas para la candidatura activa.
+ * Delega la persistencia en el `DashboardDataProvider`, que ya mantiene el
+ * estado global agrupado; aquí sólo se reflejan las notas de la candidatura
+ * actual y se controla el editor inline.
  */
 export function useApplicationNotes(
     applicationId: string | undefined,
     initialNotes: NoteRow[],
     onError: OnNotesError,
 ): UseApplicationNotesResult {
+    const {
+        createNote: createNoteInStore,
+        updateNote: updateNoteInStore,
+        deleteNote: deleteNoteInStore,
+    } = useDashboardData();
     const [notes, setNotes] = useState<NoteRow[]>(() => sortNotesByDate(initialNotes));
     const [noteEditor, setNoteEditor] = useState<NoteEditorState | null>(null);
     const [isSavingNote, setIsSavingNote] = useState(false);
@@ -47,16 +55,14 @@ export function useApplicationNotes(
         }
 
         setIsSavingNote(true);
-        const formData = new FormData();
-        formData.set("subject", noteEditor.subject);
-        formData.set("content", noteEditor.content);
 
         if (noteEditor.type === "create") {
-            formData.set("applicationId", applicationId);
-            const result = await createNoteAction(formData);
+            const result = await createNoteInStore(applicationId, {
+                subject: noteEditor.subject,
+                content: noteEditor.content,
+            });
 
             if (result.success) {
-                setNotes((prevNotes) => sortNotesByDate([result.note, ...prevNotes]));
                 setNoteEditor(null);
                 setIsSavingNote(false);
                 return;
@@ -67,15 +73,12 @@ export function useApplicationNotes(
             return;
         }
 
-        formData.set("noteId", noteEditor.noteId);
-        const result = await updateNoteAction(formData);
+        const result = await updateNoteInStore(noteEditor.noteId, {
+            subject: noteEditor.subject,
+            content: noteEditor.content,
+        });
 
         if (result.success) {
-            setNotes((prevNotes) =>
-                sortNotesByDate(
-                    prevNotes.map((note) => (note.id === result.note.id ? result.note : note)),
-                ),
-            );
             setNoteEditor(null);
             setIsSavingNote(false);
             return;
@@ -91,10 +94,9 @@ export function useApplicationNotes(
         }
 
         setIsSavingNote(true);
-        const result = await deleteNoteAction(noteId);
+        const result = await deleteNoteInStore(applicationId, noteId);
 
         if (result.success) {
-            setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
             setNoteEditor((prevEditor) => {
                 if (prevEditor?.type === "edit" && prevEditor.noteId === noteId) {
                     return null;
