@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-    deleteApplicationAction,
-} from "@/app/dashboard/actions";
+import { useDashboardData } from "@/components/dashboard/DashboardDataProvider";
 import { ErrorToast } from "@/components/ErrorToast";
 import { Button } from "@/components/ui/Button";
 import { DeleteConfirmationPanel } from "@/components/dashboard/DeleteConfirmationPanel";
@@ -26,12 +24,14 @@ type DeleteTarget = { type: "application" } | { type: "note"; noteId: string };
 
 /**
  * Modal dinámico para visualizar y editar una candidatura.
+ * Las operaciones se delegan en el `DashboardDataProvider`.
  */
 export function ApplicationDetailsModal({
     application,
     isOpen,
     onClose,
 }: ApplicationDetailsModalProps) {
+    const { deleteApplication } = useDashboardData();
     const [mode, setMode] = useState<Mode>("view");
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>({ type: "application" });
@@ -66,7 +66,7 @@ export function ApplicationDetailsModal({
         }
 
         setIsDeleting(true);
-        const result = await deleteApplicationAction(application.id);
+        const result = await deleteApplication(application.id);
 
         if (result.success) {
             onClose();
@@ -76,7 +76,7 @@ export function ApplicationDetailsModal({
         }
 
         setErrorState({
-            title: "No se pudo eliminar la aplicación",
+            title: result.message,
             details: result.details,
         });
         setIsDeleting(false);

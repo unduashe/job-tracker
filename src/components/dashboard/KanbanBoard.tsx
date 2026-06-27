@@ -8,7 +8,7 @@ import {
 } from "@dnd-kit/core";
 import { useEffect, useState } from "react";
 import type { ApplicationStatus } from "@/lib/applications/schema";
-import type { ApplicationRow, GroupedApplications } from "@/lib/applications/types";
+import type { ApplicationRow } from "@/lib/applications/types";
 import { KANBAN_COLUMNS } from "@/lib/applications/constants";
 import { ApplicationCard } from "@/components/dashboard/ApplicationCard";
 import { ApplicationDetailsModal } from "@/components/dashboard/ApplicationDetailsModal";
@@ -18,15 +18,12 @@ import { ErrorToast } from "@/components/ErrorToast";
 import { KanbanColumn } from "@/components/dashboard/KanbanColumn";
 import { useKanbanDnd } from "@/hooks/useKanbanDnd";
 
-type KanbanBoardProps = {
-    groupedApplications: GroupedApplications;
-};
-
 /**
  * Renderiza la estructura base del tablero Kanban.
+ * Lee el estado del `DashboardDataProvider` para ser idéntico en auth y guest.
  */
-export function KanbanBoard({ groupedApplications }: KanbanBoardProps) {
-    const dnd = useKanbanDnd(groupedApplications);
+export function KanbanBoard() {
+    const dnd = useKanbanDnd();
     const { activeStatus } = useDashboardResponsive();
     const [isMobileLayout, setIsMobileLayout] = useState(() => {
         if (typeof window === "undefined") {
@@ -35,21 +32,25 @@ export function KanbanBoard({ groupedApplications }: KanbanBoardProps) {
 
         return window.matchMedia("(max-width: 1023px)").matches;
     });
-    const [selectedApplication, setSelectedApplication] = useState<ApplicationRow | null>(null);
+    const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
     const [isApplicationDetailsModalOpen, setIsApplicationDetailsModalOpen] = useState(false);
     const [isCreateApplicationModalOpen, setIsCreateApplicationModalOpen] = useState(false);
     const [createApplicationModalStatus, setCreateApplicationModalStatus] = useState<ApplicationStatus>(
         KANBAN_COLUMNS[0].status,
     );
 
+    const selectedApplication = selectedApplicationId
+        ? findApplicationById(dnd.columnsData, selectedApplicationId)
+        : null;
+
     const handleOpenDetails = (application: ApplicationRow) => {
-        setSelectedApplication(application);
+        setSelectedApplicationId(application.id);
         setIsApplicationDetailsModalOpen(true);
     };
 
     const handleCloseDetails = () => {
         setIsApplicationDetailsModalOpen(false);
-        setSelectedApplication(null);
+        setSelectedApplicationId(null);
     };
 
     const handleOpenCreateModal = (status: ApplicationStatus) => {
@@ -147,4 +148,18 @@ export function KanbanBoard({ groupedApplications }: KanbanBoardProps) {
             />
         </>
     );
+}
+
+function findApplicationById(
+    grouped: ReturnType<typeof useKanbanDnd>["columnsData"],
+    id: string,
+): ApplicationRow | null {
+    for (const column of KANBAN_COLUMNS) {
+        const found = grouped[column.status].find((application) => application.id === id);
+        if (found) {
+            return found;
+        }
+    }
+
+    return null;
 }

@@ -40,25 +40,19 @@ export async function proxy(request: NextRequest) {
     const isResetPasswordRoute = path === "/reset-password";
     const isAuthRoute =
         path === "/login" || path === "/register" || path === "/forgot-password";
-    const isProtectedRoute = path.startsWith("/dashboard");
-
-    // Si el usuario no está logado e intenta acceder a una ruta protegida se le redirige a login
-    if (!user && isProtectedRoute) {
-        return NextResponse.redirect(new URL("/login", request.url));
-    }
 
     // Restablecer contraseña exige sesión (la crea el callback tras el enlace del correo)
     if (!user && isResetPasswordRoute) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Si se accede a la raíz, redirigimos según el estado de sesión
+    // La raíz redirige siempre al dashboard.
+    // En modo invitado el dashboard funciona sin sesión gracias al modo "guest".
     if (isRootRoute) {
-        const destination = user ? "/dashboard" : "/login";
-        return NextResponse.redirect(new URL(destination, request.url));
+        return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
-    // Si el usuario está logado y accede a login se le redirige al dashboard del usuario logado
+    // Si el usuario está logado y accede a una ruta de auth se le redirige al dashboard
     if (user && isAuthRoute) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
     }
