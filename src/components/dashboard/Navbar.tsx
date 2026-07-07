@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/dashboard/actions";
 import { DashboardMobileSidebar } from "@/components/dashboard/DashboardMobileSidebar";
 import { useDashboardResponsive } from "@/components/dashboard/DashboardResponsiveProvider";
 import { useDashboardMode } from "@/components/dashboard/DashboardModeProvider";
 import { IconButton } from "@/components/ui/IconButton";
-import { LogOutIcon, MenuIcon } from "@/components/ui/icons";
+import { LogOutIcon, MenuIcon, SettingsIcon } from "@/components/ui/icons";
 
 /**
  * Barra superior del dashboard.
@@ -16,6 +17,8 @@ import { LogOutIcon, MenuIcon } from "@/components/ui/icons";
 export function Navbar() {
     const { openMobileSidebar } = useDashboardResponsive();
     const session = useDashboardMode();
+    const pathname = usePathname();
+    const isProfileActive = pathname === "/dashboard/profile";
 
     return (
         <>
@@ -28,14 +31,28 @@ export function Navbar() {
                     )}
 
                     {session.mode === "auth" ? (
-                        <form action={logoutAction} className="ml-auto hidden lg:block">
-                            <IconButton
-                                type="submit"
-                                ariaLabel="Cerrar sesión"
-                                icon={<LogOutIcon />}
-                                className="inline-flex items-center justify-center p-2 text-white hover:cursor-pointer hover:bg-white/10 focus-visible:ring-accent-100 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-700"
-                            />
-                        </form>
+                        <div className="ml-auto hidden items-center gap-1 lg:flex">
+                            <Link
+                                href="/dashboard/profile"
+                                aria-label="Información de perfil"
+                                aria-current={isProfileActive ? "page" : undefined}
+                                className={`inline-flex items-center justify-center rounded-md p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-100 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-700 ${
+                                    isProfileActive
+                                        ? "bg-white/20 text-white"
+                                        : "text-white hover:bg-white/10"
+                                }`}
+                            >
+                                <SettingsIcon />
+                            </Link>
+                            <form action={logoutAction}>
+                                <IconButton
+                                    type="submit"
+                                    ariaLabel="Cerrar sesión"
+                                    icon={<LogOutIcon />}
+                                    className="inline-flex items-center justify-center p-2 text-white hover:cursor-pointer hover:bg-white/10 focus-visible:ring-accent-100 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-700"
+                                />
+                            </form>
+                        </div>
                     ) : (
                         <div className="ml-auto hidden items-center gap-2 lg:flex">
                             <Link

@@ -38,11 +38,17 @@ export async function proxy(request: NextRequest) {
 
     const isRootRoute = path === "/";
     const isResetPasswordRoute = path === "/reset-password";
+    const isProfileRoute = path === "/dashboard/profile";
     const isAuthRoute =
         path === "/login" || path === "/register" || path === "/forgot-password";
 
     // Restablecer contraseña exige sesión (la crea el callback tras el enlace del correo)
     if (!user && isResetPasswordRoute) {
+        return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    // Perfil solo accesible para usuarios autenticados
+    if (!user && isProfileRoute) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
