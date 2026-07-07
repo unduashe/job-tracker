@@ -51,7 +51,8 @@ export const profilePasswordFormSchema = z
             .string()
             .min(1, { message: validationMessages.required("La contraseña actual") }),
         password: authSchema.shape.password,
-        confirmPassword: authSchema.shape.password,
+        // Solo confirmamos que sea un string para no duplicar errores ya que se supone que deberían tener los mismos
+        confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: validationMessages.authPasswordMismatch,
