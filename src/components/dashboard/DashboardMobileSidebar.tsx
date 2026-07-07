@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/dashboard/actions";
 import { useDashboardResponsive } from "@/components/dashboard/DashboardResponsiveProvider";
 import { useDashboardMode } from "@/components/dashboard/DashboardModeProvider";
@@ -22,6 +23,8 @@ export function DashboardMobileSidebar() {
         closeMobileSidebar,
     } = useDashboardResponsive();
     const session = useDashboardMode();
+    const pathname = usePathname();
+    const isProfileActive = pathname === "/dashboard/profile";
 
     const handleSelectStatus = (status: ApplicationStatus) => {
         if (status === activeStatus) {
@@ -92,8 +95,20 @@ export function DashboardMobileSidebar() {
                 </nav>
 
                 {session.mode === "auth" ? (
-                    <div className="mt-4 flex justify-end border-t border-border-subtle pt-4">
-                        <form action={logoutAction}>
+                    <div className="mt-4 flex flex-col gap-2 border-t border-border-subtle pt-4">
+                        <Link
+                            href="/dashboard/profile"
+                            onClick={closeMobileSidebar}
+                            aria-current={isProfileActive ? "page" : undefined}
+                            className={`w-full rounded-md border px-3 py-2 text-center text-sm font-semibold transition-colors ${
+                                isProfileActive
+                                    ? "border-brand-100 bg-brand-50 text-brand-700"
+                                    : "border-border-strong bg-surface-card text-foreground hover:border-brand-100 hover:bg-brand-50"
+                            }`}
+                        >
+                            Perfil
+                        </Link>
+                        <form action={logoutAction} className="flex justify-end">
                             <Button
                                 type="submit"
                                 variant="secondary"

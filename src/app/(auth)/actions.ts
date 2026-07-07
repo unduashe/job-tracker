@@ -9,6 +9,12 @@ import {
     forgotPasswordEmailSchema,
     resetPasswordFormSchema,
 } from "@/lib/auth/schema";
+import {
+    getWeakPasswordMessage,
+    isEmailAlreadyRegisteredError,
+    isInvalidCredentialsError,
+    isWeakPasswordError,
+} from "@/lib/auth/supabaseAuthErrors";
 import { createClient } from "@/lib/supabase/server";
 import { validationMessages } from "@/lib/utils/validationMessages";
 
@@ -216,14 +222,8 @@ export async function updatePasswordAction(
         if (error) {
             console.error("updateUser password:", error);
 
-            if (error.code === "weak_password") {
-                const trimmed = error.message.trim();
-
-                return {
-                    success: false,
-                    message:
-                        trimmed.length > 0 ? trimmed : validationMessages.authWeakPasswordFallback,
-                };
+            if (isWeakPasswordError(error)) {
+                return { success: false, message: getWeakPasswordMessage(error) };
             }
 
             return { success: false, message: validationMessages.authGenericError };
@@ -240,7 +240,7 @@ export async function updatePasswordAction(
 }
 
 function mapLoginSupabaseError(error: AuthError): AuthActionResponse {
-    if (error.code === "invalid_credentials" || isInvalidCredentialsError(error)) {
+    if (isInvalidCredentialsError(error)) {
         return { success: false, message: validationMessages.authInvalidCredentials };
     }
 
@@ -250,30 +250,15 @@ function mapLoginSupabaseError(error: AuthError): AuthActionResponse {
 }
 
 function mapRegisterSupabaseError(error: AuthError): AuthActionResponse {
-    if (error.code === "user_already_exists" || error.code === "email_exists") {
+    if (isEmailAlreadyRegisteredError(error)) {
         return { success: false, message: validationMessages.authEmailAlreadyRegistered };
     }
 
-    if (error.code === "weak_password") {
-        const trimmed = error.message.trim();
-
-        return {
-            success: false,
-            message:
-                trimmed.length > 0 ? trimmed : validationMessages.authWeakPasswordFallback,
-        };
+    if (isWeakPasswordError(error)) {
+        return { success: false, message: getWeakPasswordMessage(error) };
     }
 
     console.error("Ha ocurrido un error durante el registro:", error);
 
     return { success: false, message: validationMessages.authGenericError };
-}
-
-function isInvalidCredentialsError(error: AuthError): boolean {
-    const message = error.message.toLowerCase();
-
-    return (
-        error.status === 400 &&
-        (message.includes("invalid login credentials") || message.includes("invalid email or password"))
-    );
 }

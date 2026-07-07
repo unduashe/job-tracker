@@ -7,10 +7,7 @@ import { EyeIcon, EyeOffIcon } from "@/components/ui/icons";
 const INPUT_CLASS =
     "w-full rounded-lg border border-border-strong bg-surface-card py-2 pl-3 pr-11 text-foreground outline-none transition placeholder:text-foreground-subtle focus:border-brand-500 focus:ring-2 focus:ring-brand-100";
 
-export type PasswordInputProps = Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    "type" | "value" | "onChange"
->;
+export type PasswordInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type">;
 
 /**
  * Campo de contraseña con botón para alternar visibilidad.

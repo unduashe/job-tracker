@@ -34,3 +34,27 @@ export const resetPasswordFormSchema = z
         message: validationMessages.authPasswordMismatch,
         path: ["confirmPassword"],
     });
+
+/**
+ * Nuevo correo para actualizar el perfil del usuario autenticado.
+ */
+export const profileEmailFormSchema = z.object({
+    email: authSchema.shape.email,
+});
+
+/**
+ * Cambio de contraseña desde perfil (contraseña actual + nueva + confirmación).
+ */
+export const profilePasswordFormSchema = z
+    .object({
+        currentPassword: z
+            .string()
+            .min(1, { message: validationMessages.required("La contraseña actual") }),
+        password: authSchema.shape.password,
+        // Solo confirmamos que sea un string para no duplicar errores ya que se supone que deberían tener los mismos
+        confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: validationMessages.authPasswordMismatch,
+        path: ["confirmPassword"],
+    });

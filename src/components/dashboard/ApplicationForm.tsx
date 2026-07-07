@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { APPLICATION_STATUS, type ApplicationStatus } from "@/lib/applications/schema";
 import { APPLICATION_STATUS_LABELS } from "@/lib/applications/constants";
 import type { ApplicationRow } from "@/lib/applications/types";
+import { getStringField } from "@/lib/utils/formData";
 
 type ApplicationFormProps = {
     defaultStatus?: ApplicationStatus;
@@ -15,11 +16,6 @@ type ApplicationFormProps = {
     onCancel?: () => void;
     onSuccess: () => void;
 };
-
-function readField(formData: FormData, key: string): string  {
-    const value = formData.get(key);
-    return typeof value === "string" ? value : "";
-}
 
 export function ApplicationForm({
     defaultStatus,
@@ -43,10 +39,10 @@ export function ApplicationForm({
         try {
             const formData = new FormData(event.currentTarget);
             const input = {
-                company: readField(formData, "company"),
-                role: readField(formData, "role"),
-                description: readField(formData, "description"),
-                status: readField(formData, "status"),
+                company: getStringField(formData, "company") ?? "",
+                role: getStringField(formData, "role") ?? "",
+                description: getStringField(formData, "description") ?? "",
+                status: getStringField(formData, "status") ?? "",
             };
 
             const result =

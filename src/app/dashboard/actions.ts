@@ -13,6 +13,7 @@ import { updateNote } from "@/lib/applications/notes/updateNote";
 import type { ApplicationRow } from "@/lib/applications/types";
 import { updateApplication } from "@/lib/applications/updateApplication";
 import { createClient } from "@/lib/supabase/server";
+import { getStringField } from "@/lib/utils/formData";
 
 /**
  * Cierra la sesión del usuario actual y redirige al login.
@@ -28,11 +29,6 @@ export async function logoutAction(): Promise<void> {
     }
 
     redirect("/login");
-}
-
-function getStringField(formData: FormData, field: string): string | undefined {
-    const value = formData.get(field);
-    return typeof value === "string" ? value : undefined;
 }
 
 /**
