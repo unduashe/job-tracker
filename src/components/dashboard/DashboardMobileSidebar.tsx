@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { logoutAction } from "@/app/dashboard/actions";
+import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { useDashboardResponsive } from "@/components/dashboard/DashboardResponsiveProvider";
 import { useDashboardMode } from "@/components/dashboard/DashboardModeProvider";
-import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
-import { CloseIcon, LogOutIcon } from "@/components/ui/icons";
+import { CloseIcon } from "@/components/ui/icons";
 import { KANBAN_COLUMNS } from "@/lib/applications/constants";
 import type { ApplicationStatus } from "@/lib/applications/schema";
 
@@ -108,16 +107,9 @@ export function DashboardMobileSidebar() {
                         >
                             Perfil
                         </Link>
-                        <form action={logoutAction} className="flex justify-end">
-                            <Button
-                                type="submit"
-                                variant="secondary"
-                                className="inline-flex items-center gap-2"
-                            >
-                                <LogOutIcon size={18} />
-                                Cerrar sesión
-                            </Button>
-                        </form>
+                        <div className="flex justify-end">
+                            <LogoutButton variant="full" />
+                        </div>
                     </div>
                 ) : (
                     <div className="mt-4 flex flex-col gap-2 border-t border-border-subtle pt-4">

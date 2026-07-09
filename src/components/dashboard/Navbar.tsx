@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { logoutAction } from "@/app/dashboard/actions";
 import { DashboardMobileSidebar } from "@/components/dashboard/DashboardMobileSidebar";
+import { LogoutButton } from "@/components/dashboard/LogoutButton";
 import { useDashboardResponsive } from "@/components/dashboard/DashboardResponsiveProvider";
 import { useDashboardMode } from "@/components/dashboard/DashboardModeProvider";
 import { IconButton } from "@/components/ui/IconButton";
-import { LogOutIcon, MenuIcon, SettingsIcon } from "@/components/ui/icons";
+import { MenuIcon, SettingsIcon } from "@/components/ui/icons";
 
 /**
  * Barra superior del dashboard.
@@ -44,14 +44,10 @@ export function Navbar() {
                             >
                                 <SettingsIcon />
                             </Link>
-                            <form action={logoutAction}>
-                                <IconButton
-                                    type="submit"
-                                    ariaLabel="Cerrar sesión"
-                                    icon={<LogOutIcon />}
-                                    className="inline-flex items-center justify-center p-2 text-white hover:cursor-pointer hover:bg-white/10 focus-visible:ring-accent-100 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-700"
-                                />
-                            </form>
+                            <LogoutButton
+                                variant="icon"
+                                className="inline-flex items-center justify-center p-2 text-white hover:cursor-pointer hover:bg-white/10 focus-visible:ring-accent-100 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-700"
+                            />
                         </div>
                     ) : (
                         <div className="ml-auto hidden items-center gap-2 lg:flex">
