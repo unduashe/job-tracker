@@ -7,6 +7,7 @@ import { ErrorToast } from "@/components/ErrorToast";
 import { Button } from "@/components/ui/Button";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { registerWithPassword } from "@/app/(auth)/actions";
+import { AuthDashboardLink } from "@/components/auth/AuthDashboardLink";
 import { isNextRedirectError } from "@/lib/auth/isNextRedirectError";
 
 type FeedbackState = {
@@ -129,6 +130,8 @@ export function RegisterForm() {
                         Inicia sesión
                     </Link>
                 </p>
+
+                <AuthDashboardLink />
             </form>
 
             <ErrorToast
