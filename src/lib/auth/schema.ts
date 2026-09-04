@@ -2,7 +2,7 @@ import { z } from "zod";
 import { validationMessages } from "@/lib/utils/validationMessages";
 
 /**
- * Credenciales de login y registro con las mismas reglas de fortaleza de contraseña.
+ * Credenciales de registro con reglas de fortaleza de contraseña.
  */
 export const authSchema = z.object({
     email: z.string().trim().email({ message: validationMessages.authEmailInvalid }),
@@ -13,13 +13,11 @@ export const authSchema = z.object({
         .regex(/[0-9]/, { message: validationMessages.authPasswordRequiresNumber }),
 });
 
-export type AuthCredentials = z.infer<typeof authSchema>;
-
 /**
  * Email para solicitar el enlace de recuperación de contraseña.
  */
 export const forgotPasswordEmailSchema = z.object({
-    email: z.string().trim().email({ message: validationMessages.authEmailInvalid }),
+    email: authSchema.shape.email,
 });
 
 /**
