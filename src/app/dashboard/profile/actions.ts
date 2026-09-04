@@ -25,7 +25,7 @@ export type ProfileActionResponse = {
  */
 export async function updateProfileEmailAction(formData: FormData): Promise<ProfileActionResponse> {
     const email = getStringField(formData, "email");
-    const parsed = profileEmailFormSchema.safeParse({ email: email?.trim() ?? "" });
+    const parsed = profileEmailFormSchema.safeParse({ email: email ?? "" });
 
     if (!parsed.success) {
         const details = parsed.error.issues.map((issue) => issue.message);
@@ -53,7 +53,7 @@ export async function updateProfileEmailAction(formData: FormData): Promise<Prof
         }
 
         const currentEmail = user.email.trim().toLowerCase();
-        const newEmail = parsed.data.email.trim().toLowerCase();
+        const newEmail = parsed.data.email;
 
         if (newEmail === currentEmail) {
             return {

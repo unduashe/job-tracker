@@ -357,9 +357,9 @@ function ProfilePasswordCard() {
                                     variant="primary"
                                     disabled={
                                         isPending ||
-                                        form.currentPassword.trim().length === 0 ||
-                                        form.password.trim().length === 0 ||
-                                        form.confirmPassword.trim().length === 0
+                                        form.currentPassword.length === 0 ||
+                                        form.password.length === 0 ||
+                                        form.confirmPassword.length === 0
                                     }
                                 >
                                     {isPending ? "Guardando…" : "Confirmar"}
