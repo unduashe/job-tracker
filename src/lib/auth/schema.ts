@@ -5,7 +5,7 @@ import { validationMessages } from "@/lib/utils/validationMessages";
  * Credenciales de registro con reglas de fortaleza de contraseña.
  */
 export const authSchema = z.object({
-    email: z.string().trim().email({ message: validationMessages.authEmailInvalid }),
+    email: z.string().trim().toLowerCase().email({ message: validationMessages.authEmailInvalid }),
     password: z
         .string()
         .min(8, { message: validationMessages.authPasswordMinLength })

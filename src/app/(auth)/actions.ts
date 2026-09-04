@@ -40,7 +40,7 @@ type ParsedAuthInput =
  */
 function parseAuthInput(email: string, password: string): ParsedAuthInput {
     const parsed = authSchema.safeParse({
-        email: email.trim(),
+        email,
         password,
     });
 
@@ -73,7 +73,7 @@ export async function loginWithPassword(email: string, password: string): Promis
         const cookieStore = await cookies();
         const supabase = createClient(cookieStore);
         const { error } = await supabase.auth.signInWithPassword({
-            email,
+            email: email.trim().toLowerCase(),
             password,
         });
 
@@ -152,7 +152,7 @@ export async function registerWithPassword(email: string, password: string): Pro
 export async function sendResetPasswordEmailAction(
     email: string,
 ): Promise<PasswordRecoveryActionResponse> {
-    const parsed = forgotPasswordEmailSchema.safeParse({ email: email.trim() });
+    const parsed = forgotPasswordEmailSchema.safeParse({ email });
 
     if (!parsed.success) {
         return {
