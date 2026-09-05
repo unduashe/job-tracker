@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import {
-    createApplicationAction,
-    updateApplicationAction,
-} from "@/app/dashboard/actions";
+import { useDashboardData } from "@/components/dashboard/DashboardDataProvider";
 import { ErrorToast } from "@/components/ErrorToast";
 import { Button } from "@/components/ui/Button";
 import { APPLICATION_STATUS, type ApplicationStatus } from "@/lib/applications/schema";
 import { APPLICATION_STATUS_LABELS } from "@/lib/applications/constants";
 import type { ApplicationRow } from "@/lib/applications/types";
+import { getStringField } from "@/lib/utils/formData";
 
 type ApplicationFormProps = {
     defaultStatus?: ApplicationStatus;
@@ -26,6 +24,7 @@ export function ApplicationForm({
     onCancel,
     onSuccess,
 }: ApplicationFormProps) {
+    const { createApplication, updateApplication } = useDashboardData();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorState, setErrorState] = useState<{ title: string; details: string[] } | null>(null);
     const isEditMode = mode === "edit";
@@ -33,24 +32,33 @@ export function ApplicationForm({
 
     const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
-        
+
         setIsSubmitting(true);
         setErrorState(null);
 
         try {
             const formData = new FormData(event.currentTarget);
-            const result = isEditMode
-                ? await updateApplicationAction(formData)
-                : await createApplicationAction(formData);
+            const input = {
+                company: getStringField(formData, "company") ?? "",
+                role: getStringField(formData, "role") ?? "",
+                description: getStringField(formData, "description") ?? "",
+                status: getStringField(formData, "status") ?? "",
+            };
+
+            const result =
+                isEditMode && initialData
+                    ? await updateApplication(initialData.id, input)
+                    : await createApplication(input);
 
             if (result.success) {
                 onSuccess();
-            } else {
-                setErrorState({
-                    title: result.message,
-                    details: result.details,
-                });
+                return;
             }
+
+            setErrorState({
+                title: result.message,
+                details: result.details,
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -66,10 +74,6 @@ export function ApplicationForm({
             />
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-                {isEditMode && initialData ? (
-                    <input type="hidden" name="applicationId" value={initialData.id} />
-                ) : null}
-
                 <div className="space-y-1">
                     <label htmlFor="company" className="text-sm font-medium text-foreground">
                         Empresa

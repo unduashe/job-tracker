@@ -7,6 +7,7 @@ import { ErrorToast } from "@/components/ErrorToast";
 import { Button } from "@/components/ui/Button";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { loginWithPassword } from "@/app/(auth)/actions";
+import { AuthDashboardLink } from "@/components/auth/AuthDashboardLink";
 
 type ErrorState = {
     title: string;
@@ -122,6 +123,8 @@ export function LoginForm() {
                         Regístrate
                     </Link>
                 </p>
+
+                <AuthDashboardLink />
             </form>
 
             <ErrorToast

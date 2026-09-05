@@ -19,6 +19,11 @@ export const validationMessages = {
     authLoginSuccess: "Inicio de sesión exitoso",
     authResetEmailSent: "Revisa tu bandeja de entrada",
     authPasswordMismatch: "Las contraseñas no coinciden",
-    authPasswordUpdated: "Contraseña actualizada",
+    authPasswordUpdated: "Contraseña actualizada correctamente.",
     authSessionRequired: "Tu sesión ha expirado. Solicita un nuevo enlace de recuperación.",
+    authProfileSessionRequired: "Debes iniciar sesión para acceder a tu perfil.",
+    authProfileEmailSameAsCurrent: "El nuevo correo debe ser distinto del actual.",
+    authProfileEmailChangeSent:
+        "Revisa tu correo para confirmar el cambio de dirección electrónica.",
+    authProfileCurrentPasswordInvalid: "La contraseña actual no es correcta.",
 } as const;

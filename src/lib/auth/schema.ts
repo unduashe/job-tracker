@@ -2,10 +2,10 @@ import { z } from "zod";
 import { validationMessages } from "@/lib/utils/validationMessages";
 
 /**
- * Credenciales de login y registro con las mismas reglas de fortaleza de contraseña.
+ * Credenciales de registro con reglas de fortaleza de contraseña.
  */
 export const authSchema = z.object({
-    email: z.string().trim().email({ message: validationMessages.authEmailInvalid }),
+    email: z.string().trim().toLowerCase().email({ message: validationMessages.authEmailInvalid }),
     password: z
         .string()
         .min(8, { message: validationMessages.authPasswordMinLength })
@@ -13,13 +13,11 @@ export const authSchema = z.object({
         .regex(/[0-9]/, { message: validationMessages.authPasswordRequiresNumber }),
 });
 
-export type AuthCredentials = z.infer<typeof authSchema>;
-
 /**
  * Email para solicitar el enlace de recuperación de contraseña.
  */
 export const forgotPasswordEmailSchema = z.object({
-    email: z.string().trim().email({ message: validationMessages.authEmailInvalid }),
+    email: authSchema.shape.email,
 });
 
 /**
@@ -29,6 +27,30 @@ export const resetPasswordFormSchema = z
     .object({
         password: authSchema.shape.password,
         confirmPassword: authSchema.shape.password,
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: validationMessages.authPasswordMismatch,
+        path: ["confirmPassword"],
+    });
+
+/**
+ * Nuevo correo para actualizar el perfil del usuario autenticado.
+ */
+export const profileEmailFormSchema = z.object({
+    email: authSchema.shape.email,
+});
+
+/**
+ * Cambio de contraseña desde perfil (contraseña actual + nueva + confirmación).
+ */
+export const profilePasswordFormSchema = z
+    .object({
+        currentPassword: z
+            .string()
+            .min(1, { message: validationMessages.required("La contraseña actual") }),
+        password: authSchema.shape.password,
+        // Solo confirmamos que sea un string para no duplicar errores ya que se supone que deberían tener los mismos
+        confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: validationMessages.authPasswordMismatch,
