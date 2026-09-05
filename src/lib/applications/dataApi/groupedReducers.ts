@@ -11,7 +11,7 @@ export function emptyGroupedApplications(): GroupedApplications {
         interview: [],
         offer: [],
         rejected: [],
-        archived: [],
+        ghosted: [],
     };
 }
 
@@ -43,7 +43,7 @@ export function applyApplicationUpdate(
         interview: [...state.interview],
         offer: [...state.offer],
         rejected: [...state.rejected],
-        archived: [...state.archived],
+        ghosted: [...state.ghosted],
     };
 
     for (const column of KANBAN_COLUMNS) {

@@ -5,7 +5,7 @@ export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
     interview: "Entrevista",
     offer: "Oferta",
     rejected: "Rechazado",
-    archived: "Archivado",
+    ghosted: "Sin respuesta",
 };
 
 export const KANBAN_COLUMNS: ReadonlyArray<{ title: string; status: ApplicationStatus }> = [
@@ -13,5 +13,5 @@ export const KANBAN_COLUMNS: ReadonlyArray<{ title: string; status: ApplicationS
     { title: "Entrevista", status: "interview" },
     { title: "Oferta", status: "offer" },
     { title: "Rechazado", status: "rejected" },
-    { title: "Archivado", status: "archived" },
+    { title: "Sin respuesta", status: "ghosted" },
 ];
