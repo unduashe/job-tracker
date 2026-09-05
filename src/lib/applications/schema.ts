@@ -6,7 +6,7 @@ export const APPLICATION_STATUS = [
     "interview",
     "offer",
     "rejected",
-    "archived",
+    "ghosted",
 ] as const;
 
 /**
