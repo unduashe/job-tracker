@@ -73,8 +73,7 @@ export function createServerDataApi(initial: GroupedApplications): DashboardData
             formData.set("noteId", noteId);
             return updateNoteAction(formData);
         },
-        // Se pasa param applicationId para mantener consistencia entre métodos server y local
-        async deleteNote(_applicationId: string, noteId: string) {
+        async deleteNote(noteId: string) {
             return deleteNoteAction(noteId);
         },
     };

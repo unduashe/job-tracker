@@ -8,7 +8,7 @@ import { deleteApplication } from "@/lib/applications/deleteApplication";
 import { failFromError, ok, type Result } from "@/lib/applications/dataApi/result";
 import { createNote } from "@/lib/applications/notes/createNote";
 import { deleteNote } from "@/lib/applications/notes/deleteNote";
-import type { NoteRow } from "@/lib/applications/notes/types";
+import type { DeleteNoteResult, NoteRow } from "@/lib/applications/notes/types";
 import { updateNote } from "@/lib/applications/notes/updateNote";
 import type { ApplicationRow } from "@/lib/applications/types";
 import { updateApplication } from "@/lib/applications/updateApplication";
@@ -177,10 +177,10 @@ export async function updateNoteAction(formData: FormData): Promise<Result<NoteR
 /**
  * Elimina una nota existente.
  */
-export async function deleteNoteAction(noteId: string): Promise<Result> {
+export async function deleteNoteAction(noteId: string): Promise<Result<DeleteNoteResult>> {
     try {
-        await deleteNote(noteId);
-        return ok(undefined);
+        const deleted = await deleteNote(noteId);
+        return ok(deleted);
     } catch (error) {
         console.error("deleteNoteAction error:", error);
         return failFromError("No se pudo eliminar la nota", error);
