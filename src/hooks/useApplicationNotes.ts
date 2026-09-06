@@ -94,7 +94,7 @@ export function useApplicationNotes(
         }
 
         setIsSavingNote(true);
-        const result = await deleteNoteInStore(applicationId, noteId);
+        const result = await deleteNoteInStore(noteId);
 
         if (result.success) {
             setNoteEditor((prevEditor) => {

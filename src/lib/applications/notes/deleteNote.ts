@@ -1,11 +1,12 @@
 import { cookies } from "next/headers";
 import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 import { createClient } from "@/lib/supabase/server";
+import type { DeleteNoteResult } from "@/lib/applications/notes/types";
 
 /**
  * Elimina una nota del usuario autenticado.
  */
-export async function deleteNote(noteId: string): Promise<void> {
+export async function deleteNote(noteId: string): Promise<DeleteNoteResult> {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
     const user = await getCurrentUser(supabase);
@@ -42,4 +43,6 @@ export async function deleteNote(noteId: string): Promise<void> {
     if (!data) {
         throw new Error("No se ha encontrado la nota o no tienes permisos");
     }
+
+    return { applicationId: ownedNote.application_id };
 }

@@ -267,7 +267,7 @@ export function createLocalDataApi(): DashboardDataApi {
             }
         },
 
-        async deleteNote(applicationId: string, noteId: string) {
+        async deleteNote(noteId: string) {
             try {
                 const grouped = loadGrouped();
                 const existing = findNoteById(grouped, noteId);
@@ -278,9 +278,9 @@ export function createLocalDataApi(): DashboardDataApi {
                     ]);
                 }
 
-                const next = applyNoteDelete(grouped, applicationId, noteId);
+                const next = applyNoteDelete(grouped, existing.application_id, noteId);
                 persistGrouped(next);
-                return ok(undefined);
+                return ok({ applicationId: existing.application_id });
             } catch (error) {
                 console.error("localDataApi.deleteNote error:", error);
                 return failFromError("No se ha podido eliminar la nota", error);

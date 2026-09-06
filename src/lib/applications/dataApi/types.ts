@@ -1,6 +1,6 @@
 import type { ApplicationStatus } from "@/lib/applications/schema";
 import type { ApplicationRow, GroupedApplications } from "@/lib/applications/types";
-import type { NoteRow } from "@/lib/applications/notes/types";
+import type { DeleteNoteResult, NoteRow } from "@/lib/applications/notes/types";
 import type { Result } from "@/lib/applications/dataApi/result";
 
 /**
@@ -58,8 +58,5 @@ export type DashboardDataApi = {
     ): Promise<Result<ApplicationRow>>;
     createNote(applicationId: string, input: CreateNoteApiInput): Promise<Result<NoteRow>>;
     updateNote(noteId: string, input: UpdateNoteApiInput): Promise<Result<NoteRow>>;
-    /**
-     * `applicationId` no se envía al servidor, solo es usado para el modo guest
-     */
-    deleteNote(applicationId: string, noteId: string): Promise<Result>;
+    deleteNote(noteId: string): Promise<Result<DeleteNoteResult>>;
 };

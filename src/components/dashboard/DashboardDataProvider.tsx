@@ -26,7 +26,7 @@ import {
 } from "@/lib/applications/dataApi/groupedReducers";
 import type { Result } from "@/lib/applications/dataApi/result";
 import type { ApplicationRow } from "@/lib/applications/types";
-import type { NoteRow } from "@/lib/applications/notes/types";
+import type { DeleteNoteResult, NoteRow } from "@/lib/applications/notes/types";
 
 type DashboardDataContextValue = {
     groupedApplications: GroupedApplications;
@@ -46,7 +46,7 @@ type DashboardDataContextValue = {
         input: CreateNoteApiInput,
     ) => Promise<Result<NoteRow>>;
     updateNote: (noteId: string, input: UpdateNoteApiInput) => Promise<Result<NoteRow>>;
-    deleteNote: (applicationId: string, noteId: string) => Promise<Result>;
+    deleteNote: (noteId: string) => Promise<Result<DeleteNoteResult>>;
 };
 
 const DashboardDataContext = createContext<DashboardDataContextValue | null>(null);
@@ -142,10 +142,10 @@ export function DashboardDataProvider({ api, children }: DashboardDataProviderPr
     );
 
     const deleteNote = useCallback<DashboardDataContextValue["deleteNote"]>(
-        async (applicationId, noteId) => {
-            const result = await api.deleteNote(applicationId, noteId);
+        async (noteId) => {
+            const result = await api.deleteNote(noteId);
             if (result.success) {
-                setGroupedApplications((prev) => applyNoteDelete(prev, applicationId, noteId));
+                setGroupedApplications((prev) => applyNoteDelete(prev, result.data.applicationId, noteId));
             }
             return result;
         },
