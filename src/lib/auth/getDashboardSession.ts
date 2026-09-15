@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
@@ -13,7 +14,7 @@ export type DashboardSession =
 /**
  * Lee la sesión actual de Supabase y la traduce a un `DashboardSession`.
  */
-export async function getDashboardSession(): Promise<DashboardSession> {
+export const getDashboardSession = cache(async (): Promise<DashboardSession> => {
     try {
         const cookieStore = await cookies();
         const supabase = createClient(cookieStore);
@@ -31,4 +32,4 @@ export async function getDashboardSession(): Promise<DashboardSession> {
         console.error("getDashboardSession error:", error);
         return { mode: "guest" };
     }
-}
+});

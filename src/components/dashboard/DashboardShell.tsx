@@ -1,60 +1,37 @@
 "use client";
 
 import { useMemo } from "react";
-import { DashboardDataProvider } from "@/components/dashboard/DashboardDataProvider";
 import { DashboardModeProvider } from "@/components/dashboard/DashboardModeProvider";
 import { DashboardResponsiveProvider } from "@/components/dashboard/DashboardResponsiveProvider";
-import { GuestDataMigrationPrompt } from "@/components/dashboard/GuestDataMigrationPrompt";
 import { Navbar } from "@/components/dashboard/Navbar";
 import { createServerDataApi } from "@/lib/applications/dataApi/serverDataApi";
 import type { DashboardSession } from "@/lib/auth/getDashboardSession";
-import type { GroupedApplications } from "@/lib/applications/types";
+import { GroupedApplications } from "@/lib/applications/types";
+import { DashboardDataProvider } from "./DashboardDataProvider";
 
 type DashboardShellProps = {
     session: DashboardSession;
-    /**
-     * Datos iniciales agrupados ya pre-cargados por el layout en modo auth.
-     * En modo guest se ignora: el provider de datos lo monta `GuestKanbanBoard`
-     * con `localDataApi` desde dentro de un boundary `dynamic({ ssr: false })`.
-     */
-    initialGroupedApplications: GroupedApplications;
     children: React.ReactNode;
 };
 
 /**
- * Estructura cliente del dashboard.
- * Compone los providers necesarios (mode + responsive + data) y la shell visual.
+ * Shell visual del dashboard (cliente): modo de sesión, layout responsive y navbar.
+ * El provider de datos del kanban auth vive en `AuthDataBoundary`, montado por la page.
  */
 export function DashboardShell({
     session,
-    initialGroupedApplications,
     children,
 }: DashboardShellProps) {
-    const shellLayout = (
-        <DashboardResponsiveProvider>
-            <div className="flex h-dvh flex-col overflow-hidden bg-surface-canvas">
-                <Navbar />
-                <main className="flex min-h-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-                    {children}
-                </main>
-            </div>
-        </DashboardResponsiveProvider>
-    );
-
-    if (session.mode === "auth") {
-        return (
-            <DashboardModeProvider session={session}>
-                <AuthDataBoundary initialGroupedApplications={initialGroupedApplications}>
-                    {shellLayout}
-                    <GuestDataMigrationPrompt />
-                </AuthDataBoundary>
-            </DashboardModeProvider>
-        );
-    }
-
     return (
         <DashboardModeProvider session={session}>
-            {shellLayout}
+            <DashboardResponsiveProvider>
+                <div className="flex h-dvh flex-col overflow-hidden bg-surface-canvas">
+                    <Navbar />
+                    <main className="flex min-h-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+                        {children}
+                    </main>
+                </div>
+            </DashboardResponsiveProvider>
         </DashboardModeProvider>
     );
 }
@@ -65,14 +42,15 @@ type AuthDataBoundaryProps = {
 };
 
 /**
- * Monta el `DashboardDataProvider` con el adaptador Supabase y los datos
- * iniciales cargados por el Server Component.
+ * Boundary cliente del kanban autenticado: adapta datos iniciales del Server Component
+ * a `DashboardDataProvider` vía `createServerDataApi`.
+ * Exportado desde este módulo `"use client"` para poder usarlo desde la page server.
  */
-function AuthDataBoundary({ initialGroupedApplications, children }: AuthDataBoundaryProps) {
+export function AuthDataBoundary({ initialGroupedApplications, children }: AuthDataBoundaryProps) {
     const api = useMemo(
         () => createServerDataApi(initialGroupedApplications),
         [initialGroupedApplications],
     );
-
+    
     return <DashboardDataProvider api={api}>{children}</DashboardDataProvider>;
 }
